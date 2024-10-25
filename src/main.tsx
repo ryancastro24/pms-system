@@ -7,29 +7,35 @@ import Root from "./routes/root";
 import LandingPage from "./routes/LandingPage";
 import ErrorPage from "./error-page";
 import TrucksComponent from "./pages/TrucksComponent";
+import MechanicsComponent from "./components/MechanicsComponent";
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <LandingPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/dashboard",
-    element: <Root />,
-    children: [
-      {
-        path: "trucks",
-        element: <TrucksComponent />,
-      },
-    ],
-  },
+	{
+		path: "/",
+		element: <LandingPage />,
+		errorElement: <ErrorPage />,
+	},
+	{
+		path: "/dashboard",
+		element: <Root />,
+		children: [
+			{
+				path: "trucks",
+				element: <TrucksComponent />,
+			},
+
+			{
+				path: "mechanics",
+				element: <MechanicsComponent />,
+			},
+		],
+	},
 ]);
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <NextUIProvider>
-      <div className="w-full h-[100vh] ">
-        <RouterProvider router={router} />
-      </div>
-    </NextUIProvider>
-  </StrictMode>
+	<StrictMode>
+		<NextUIProvider>
+			<div className="w-full h-[100vh] ">
+				<RouterProvider router={router} />
+			</div>
+		</NextUIProvider>
+	</StrictMode>
 );
