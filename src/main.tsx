@@ -7,7 +7,11 @@ import Root from "./routes/root";
 import LandingPage from "./routes/LandingPage";
 import ErrorPage from "./error-page";
 import TrucksComponent from "./pages/TrucksComponent";
-import MechanicsComponent from "./pages/MechanicsComponent";
+import DashboardStartingPage from "./components/DashboardStartingPage";
+import MechanicsComponent, {
+  loader as mechanicsLoader,
+  action as mechanicsAction,
+} from "./pages/MechanicsComponent";
 import SettingsComponent from "./pages/SettingsComponent";
 import EditProfileComponent from "./pages/EditProfileComponent";
 const router = createBrowserRouter([
@@ -21,6 +25,10 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       {
+        index: true,
+        element: <DashboardStartingPage />,
+      },
+      {
         path: "trucks",
         element: <TrucksComponent />,
       },
@@ -28,6 +36,13 @@ const router = createBrowserRouter([
       {
         path: "mechanics",
         element: <MechanicsComponent />,
+        loader: mechanicsLoader,
+        action: mechanicsAction,
+        errorElement: (
+          <div>
+            <h1>Oops, there was an error! </h1>
+          </div>
+        ),
       },
       {
         path: "editProfile",
