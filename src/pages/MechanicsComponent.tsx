@@ -10,6 +10,13 @@ import {
 } from "@nextui-org/table";
 import { GoPersonAdd } from "react-icons/go";
 import { Button } from "@nextui-org/button";
+import { CiMenuKebab } from "react-icons/ci";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/dropdown";
 import {
   Modal,
   ModalContent,
@@ -62,6 +69,9 @@ type LoaderDataType = {
 const MechanicsComponent = () => {
   const [searchData, setSearchData] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<SamplePropType | null>(null);
+
   const { users } = useLoaderData() as LoaderDataType;
 
   const [page, setPage] = useState(1);
@@ -80,6 +90,16 @@ const MechanicsComponent = () => {
   }, [page, users, searchData]);
 
   const navigate = useNavigate();
+
+  const openEditModal = (user: SamplePropType) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setSelectedUser(null);
+    setIsEditModalOpen(false);
+  };
 
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
@@ -154,9 +174,6 @@ const MechanicsComponent = () => {
                         color="danger"
                         variant="light"
                         onPress={onClose}
-                        onClick={() => {
-                          navigate(1);
-                        }}
                       >
                         Cancel
                       </Button>
@@ -198,6 +215,7 @@ const MechanicsComponent = () => {
             <TableColumn>USERNAME</TableColumn>
             <TableColumn>EMAIL</TableColumn>
             <TableColumn>ADDRESS</TableColumn>
+            <TableColumn>ACTION</TableColumn>
           </TableHeader>
           <TableBody>
             {items.map((user) => (
@@ -206,11 +224,96 @@ const MechanicsComponent = () => {
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.address.street}</TableCell>
+                <TableCell>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly className="text-2xl" variant="light">
+                        <CiMenuKebab />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Actions">
+                      <DropdownItem
+                        key="edit"
+                        onClick={() => openEditModal(user)}
+                      >
+                        Edit
+                      </DropdownItem>
+                      <DropdownItem
+                        key="delete"
+                        color="danger"
+                        className="text-danger"
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {/* Edit Modal */}
+      {selectedUser && (
+        <Modal
+          size="2xl"
+          isOpen={isEditModalOpen}
+          onOpenChange={closeEditModal}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>Edit Employee</ModalHeader>
+                <ModalBody>
+                  <Form method="post" className="grid grid-cols-2 gap-4">
+                    <Input
+                      type="text"
+                      label="Name"
+                      name="name"
+                      defaultValue={selectedUser.name}
+                      required
+                    />
+                    <Input
+                      type="text"
+                      label="Username"
+                      name="username"
+                      defaultValue={selectedUser.username}
+                      required
+                    />
+                    <Input
+                      type="email"
+                      label="Email"
+                      name="email"
+                      defaultValue={selectedUser.email}
+                      required
+                    />
+                    <Input
+                      type="text"
+                      label="Address"
+                      name="address"
+                      defaultValue={selectedUser.address.street}
+                      required
+                    />
+                  </Form>
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="danger"
+                    variant="light"
+                    onPress={closeEditModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button color="primary" type="submit">
+                    Save Changes
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      )}
     </div>
   );
 };

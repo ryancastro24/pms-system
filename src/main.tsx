@@ -13,7 +13,9 @@ import MechanicsComponent, {
   action as mechanicsAction,
 } from "./pages/MechanicsComponent";
 import SettingsComponent from "./pages/SettingsComponent";
-import EditProfileComponent from "./pages/EditProfileComponent";
+import EditProfileComponent, {
+  action as editProfileAction,
+} from "./pages/EditProfileComponent";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -47,6 +49,7 @@ const router = createBrowserRouter([
       {
         path: "editProfile",
         element: <EditProfileComponent />,
+        action: editProfileAction,
       },
       {
         path: "settings",
