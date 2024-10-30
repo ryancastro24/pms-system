@@ -26,7 +26,11 @@ import {
   useDisclosure,
 } from "@nextui-org/modal";
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
-import { getAllEmployeesData } from "../backend/getEmployeesData";
+import {
+  getAllEmployeesData,
+  addEmployeeData,
+  editEmployeeData,
+} from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
 import { redirect, useNavigate } from "react-router-dom";
 
@@ -36,12 +40,21 @@ export async function loader() {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  console.log(request.method);
   const formData = await request.formData();
   const data: Record<string, FormDataEntryValue> = Object.fromEntries(
     formData.entries()
   );
+  if (request.method === "POST") {
+    const addData = await addEmployeeData(data);
 
-  console.log(data);
+    return addData;
+  }
+  if (request.method === "PUT") {
+    const editData = await editEmployeeData(data);
+
+    return editData;
+  }
   return redirect("/dashboard/mechanics");
 };
 
@@ -62,7 +75,7 @@ type SamplePropType = {
   };
 };
 
-type LoaderDataType = {
+export type LoaderDataType = {
   users: SamplePropType[];
 };
 
@@ -263,39 +276,37 @@ const MechanicsComponent = () => {
         >
           <ModalContent>
             {(onClose) => (
-              <>
+              <Form method="put">
                 <ModalHeader>Edit Employee</ModalHeader>
-                <ModalBody>
-                  <Form method="post" className="grid grid-cols-2 gap-4">
-                    <Input
-                      type="text"
-                      label="Name"
-                      name="name"
-                      defaultValue={selectedUser.name}
-                      required
-                    />
-                    <Input
-                      type="text"
-                      label="Username"
-                      name="username"
-                      defaultValue={selectedUser.username}
-                      required
-                    />
-                    <Input
-                      type="email"
-                      label="Email"
-                      name="email"
-                      defaultValue={selectedUser.email}
-                      required
-                    />
-                    <Input
-                      type="text"
-                      label="Address"
-                      name="address"
-                      defaultValue={selectedUser.address.street}
-                      required
-                    />
-                  </Form>
+                <ModalBody className="grid grid-cols-2 gap-4">
+                  <Input
+                    type="text"
+                    label="Name"
+                    name="name"
+                    defaultValue={selectedUser.name}
+                    required
+                  />
+                  <Input
+                    type="text"
+                    label="Username"
+                    name="username"
+                    defaultValue={selectedUser.username}
+                    required
+                  />
+                  <Input
+                    type="email"
+                    label="Email"
+                    name="email"
+                    defaultValue={selectedUser.email}
+                    required
+                  />
+                  <Input
+                    type="text"
+                    label="Address"
+                    name="address"
+                    defaultValue={selectedUser.address.street}
+                    required
+                  />
                 </ModalBody>
                 <ModalFooter>
                   <Button
@@ -306,10 +317,10 @@ const MechanicsComponent = () => {
                     Cancel
                   </Button>
                   <Button color="primary" type="submit">
-                    Save Changes
+                    Update Profile
                   </Button>
                 </ModalFooter>
-              </>
+              </Form>
             )}
           </ModalContent>
         </Modal>

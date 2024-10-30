@@ -6,7 +6,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
 import LandingPage from "./routes/LandingPage";
 import ErrorPage from "./error-page";
-import TrucksComponent from "./pages/TrucksComponent";
+import TrucksComponent, {
+  action as trucksAction,
+  loader as trucksLoader,
+} from "./pages/TrucksComponent";
 import DashboardStartingPage from "./components/DashboardStartingPage";
 import MechanicsComponent, {
   loader as mechanicsLoader,
@@ -33,6 +36,8 @@ const router = createBrowserRouter([
       {
         path: "trucks",
         element: <TrucksComponent />,
+        action: trucksAction,
+        loader: trucksLoader,
       },
 
       {

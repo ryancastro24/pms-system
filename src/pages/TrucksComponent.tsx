@@ -13,6 +13,16 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
+
+import {
+  Form,
+  ActionFunction,
+  redirect,
+  useLoaderData,
+} from "react-router-dom";
+import { getAllEmployeesData } from "../backend/employeesData";
+import { LoaderDataType } from "./MechanicsComponent";
+import { getAllTrucksData } from "../backend/trucksData";
 export type TrucksPropType = {
   id: number;
   licensePlate: string;
@@ -111,9 +121,28 @@ const truckStatus = [
   { key: "maintainance", label: "Maintainance" },
 ];
 
+export async function loader() {
+  const users = await getAllEmployeesData();
+
+  return { users };
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  console.log(request.method);
+  const formData = await request.formData();
+  const data: Record<string, FormDataEntryValue> = Object.fromEntries(
+    formData.entries()
+  );
+
+  console.log(data);
+  return redirect("/dashboard/trucks");
+};
+
 const TrucksComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchData, setSearchData] = useState("");
+  const { users } = useLoaderData() as LoaderDataType;
+
   const itemsPerPage = 6;
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -174,22 +203,48 @@ const TrucksComponent = () => {
                   <ModalHeader className="flex flex-col gap-1">
                     Add New Truck
                   </ModalHeader>
-                  <ModalBody className="grid grid-cols-2 gap-4">
-                    <Input type="text" label="Plate Number" />
-                    <Input type="text" label="Plate Number" />
-                    <Input type="text" label="Plate Number" />
-                    <Input type="text" label="Plate Number" />
-                    <Input type="text" label="Plate Number" />
-                    <Input type="text" label="Plate Number" />
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                      Cancel
-                    </Button>
-                    <Button color="primary" onPress={onClose}>
-                      Add Truck
-                    </Button>
-                  </ModalFooter>
+
+                  <Form method="post">
+                    <ModalBody className="grid grid-cols-2 gap-4">
+                      <Input
+                        type="text"
+                        label="Plate Number"
+                        name="plate_number"
+                      />
+                      <Input type="text" label="VIN Number" name="vin_number" />
+                      <Input
+                        type="text"
+                        label="Chassis Number"
+                        name="chassis_number"
+                      />
+                      <Input type="text" label="Model" name="model" />
+                      <Input type="text" label="Type" name="type" />
+                      <Select
+                        items={users}
+                        placeholder="Person In Charge"
+                        name="person_in_charge"
+                      >
+                        {(val) => (
+                          <SelectItem key={val.id}>{val.name}</SelectItem>
+                        )}
+                      </Select>
+
+                      <Input type="text" label="Status" name="status" />
+                      <Input
+                        type="text"
+                        label="Date Deployed"
+                        name="date_deployed"
+                      />
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color="danger" variant="light" onPress={onClose}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" color="primary" onPress={onClose}>
+                        Add Truck
+                      </Button>
+                    </ModalFooter>
+                  </Form>
                 </>
               )}
             </ModalContent>
