@@ -25,8 +25,11 @@ export default function Root() {
                 src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
               }}
             />
-            <h1 className="py-2 px-3 rounded bg-[#dcd8d0] font-bold">
-              Dashboard
+            <h1
+              onClick={() => setNavlist("dashboard")}
+              className="py-2 px-3 rounded bg-[#dcd8d0] font-bold"
+            >
+              <Link to={"/dashboard"}>Dashboard</Link>
             </h1>
           </div>
           <nav className="w-full py-5">

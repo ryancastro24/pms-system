@@ -11,6 +11,7 @@ import {
 import { GoPersonAdd } from "react-icons/go";
 import { Button } from "@nextui-org/button";
 import { CiMenuKebab } from "react-icons/ci";
+import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 import {
   Dropdown,
   DropdownTrigger,
@@ -32,7 +33,8 @@ import {
   editEmployeeData,
 } from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
-import { redirect, useNavigate } from "react-router-dom";
+import { redirect, useNavigation } from "react-router-dom";
+import { nav } from "framer-motion/client";
 
 export async function loader() {
   const users = await getAllEmployeesData();
@@ -58,6 +60,18 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/dashboard/mechanics");
 };
 
+interface Position {
+  posId: number;
+  value: string;
+}
+
+const positions: Position[] = [
+  { posId: 1, value: "Mechanic" },
+  { posId: 2, value: "Driver" },
+  { posId: 3, value: "Checker" },
+  { posId: 4, value: "Supervisor" },
+];
+
 type SamplePropType = {
   id: number;
   name: string;
@@ -80,6 +94,10 @@ export type LoaderDataType = {
 };
 
 const MechanicsComponent = () => {
+  const navigation = useNavigation();
+
+  console.log(navigation.state);
+
   const [searchData, setSearchData] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -101,8 +119,6 @@ const MechanicsComponent = () => {
         user.name.toLowerCase().includes(searchData.toLowerCase())
       );
   }, [page, users, searchData]);
-
-  const navigate = useNavigate();
 
   const openEditModal = (user: SamplePropType) => {
     setSelectedUser(user);
@@ -152,12 +168,6 @@ const MechanicsComponent = () => {
                       />
                       <Input
                         type="text"
-                        label="Gender"
-                        name="sample_gender"
-                        required
-                      />
-                      <Input
-                        type="text"
                         label="Username"
                         name="sample_username"
                         required
@@ -180,6 +190,26 @@ const MechanicsComponent = () => {
                         name="sample_address"
                         required
                       />
+
+                      <Input
+                        type="text"
+                        label="Liscence Number"
+                        name="liscence_number"
+                        required
+                      />
+
+                      <Select
+                        items={positions}
+                        name="position"
+                        label="Select Position"
+                        className="max-w-xs"
+                      >
+                        {(position) => (
+                          <SelectItem key={position.value}>
+                            {position.value}
+                          </SelectItem>
+                        )}
+                      </Select>
                     </ModalBody>
                     <ModalFooter className="w-full">
                       <Button
@@ -190,7 +220,13 @@ const MechanicsComponent = () => {
                       >
                         Cancel
                       </Button>
-                      <Button type="submit" color="primary">
+                      <Button
+                        isLoading={
+                          navigation.state === "submitting" ? true : false
+                        }
+                        type="submit"
+                        color="primary"
+                      >
                         Add Employee
                       </Button>
                     </ModalFooter>
@@ -204,6 +240,7 @@ const MechanicsComponent = () => {
 
       <div className="overflow-y-auto h-[300px]">
         <Table
+          isHeaderSticky
           bottomContent={
             <div className="flex w-full justify-center">
               <Pagination

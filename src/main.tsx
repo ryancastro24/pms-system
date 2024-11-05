@@ -19,6 +19,10 @@ import SettingsComponent from "./pages/SettingsComponent";
 import EditProfileComponent, {
   action as editProfileAction,
 } from "./pages/EditProfileComponent";
+
+import LastMaintainancePage, {
+  loader as lastmaintainanceLoader,
+} from "./pages/LastMaintainancePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -61,6 +65,11 @@ const router = createBrowserRouter([
         element: <SettingsComponent />,
       },
     ],
+  },
+  {
+    path: "lastmaintainance/:maintainanceId",
+    element: <LastMaintainancePage />,
+    loader: lastmaintainanceLoader,
   },
 ]);
 createRoot(document.getElementById("root")!).render(

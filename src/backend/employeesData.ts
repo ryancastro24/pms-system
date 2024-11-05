@@ -21,6 +21,10 @@ export async function addEmployeeData(data: AddSampleData | null) {
   try {
     console.log("Add Data received:", data);
 
+    // Introduce a 5-second delay
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    console.log("Data processed after delay");
     return data;
   } catch (error) {
     console.error("Error adding the employee data:", error);

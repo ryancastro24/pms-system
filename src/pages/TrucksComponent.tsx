@@ -22,7 +22,8 @@ import {
 } from "react-router-dom";
 import { getAllEmployeesData } from "../backend/employeesData";
 import { LoaderDataType } from "./MechanicsComponent";
-import { getAllTrucksData } from "../backend/trucksData";
+import { Link } from "react-router-dom";
+
 export type TrucksPropType = {
   id: number;
   licensePlate: string;
@@ -129,13 +130,22 @@ export async function loader() {
 
 export const action: ActionFunction = async ({ request }) => {
   console.log(request.method);
-  const formData = await request.formData();
-  const data: Record<string, FormDataEntryValue> = Object.fromEntries(
-    formData.entries()
-  );
 
-  console.log(data);
-  return redirect("/dashboard/trucks");
+  if (request.method === "POST") {
+    const formData = await request.formData();
+    const data: Record<string, FormDataEntryValue> = Object.fromEntries(
+      formData.entries()
+    );
+    console.log(data);
+    return redirect("/dashboard/trucks");
+  } else if (request.method === "PUT") {
+    const formData = await request.formData();
+    const data: Record<string, FormDataEntryValue> = Object.fromEntries(
+      formData.entries()
+    );
+    console.log(data);
+    return redirect("/dashboard/trucks");
+  }
 };
 
 const TrucksComponent = () => {
