@@ -11,7 +11,7 @@ import {
 import { GoPersonAdd } from "react-icons/go";
 import { Button } from "@nextui-org/button";
 import { CiMenuKebab } from "react-icons/ci";
-import { Select, SelectSection, SelectItem } from "@nextui-org/select";
+import { Select, SelectItem } from "@nextui-org/select";
 import {
   Dropdown,
   DropdownTrigger,
@@ -34,7 +34,6 @@ import {
 } from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
 import { redirect, useNavigation } from "react-router-dom";
-import { nav } from "framer-motion/client";
 
 export async function loader() {
   const users = await getAllEmployeesData();
@@ -312,7 +311,7 @@ const MechanicsComponent = () => {
           onOpenChange={closeEditModal}
         >
           <ModalContent>
-            {(onClose) => (
+            {() => (
               <Form method="put">
                 <ModalHeader>Edit Employee</ModalHeader>
                 <ModalBody className="grid grid-cols-2 gap-4">

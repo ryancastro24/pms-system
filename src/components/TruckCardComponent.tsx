@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import { TrucksPropType } from "../pages/TrucksComponent";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FiXCircle } from "react-icons/fi";

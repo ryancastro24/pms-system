@@ -2,10 +2,15 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { NextUIProvider } from "@nextui-org/react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Root from "./routes/root";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  redirect,
+} from "react-router-dom";
+import Root, { loader as dashboardLoader } from "./routes/root";
 import LandingPage from "./routes/LandingPage";
 import ErrorPage from "./error-page";
+import { action as loginAction } from "./components/LoginForm";
 import TrucksComponent, {
   action as trucksAction,
   loader as trucksLoader,
@@ -23,15 +28,30 @@ import EditProfileComponent, {
 import LastMaintainancePage, {
   loader as lastmaintainanceLoader,
 } from "./pages/LastMaintainancePage";
+import { isAuthenticated } from "./utils/auth"; // Import the auth check function
+
+// Loader to protect /dashboard route
+
+// Loader to protect /landing page route
+const landingPageLoader = () => {
+  if (isAuthenticated()) {
+    return redirect("/dashboard"); // Redirect to dashboard if already logged in
+  }
+  return null; // Proceed if not authenticated
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage />,
     errorElement: <ErrorPage />,
+    action: loginAction,
+    loader: landingPageLoader, // Apply the loader to protect landing page
   },
   {
     path: "/dashboard",
     element: <Root />,
+    loader: dashboardLoader, // Apply the loader to check authentication
     children: [
       {
         index: true,
@@ -43,7 +63,6 @@ const router = createBrowserRouter([
         action: trucksAction,
         loader: trucksLoader,
       },
-
       {
         path: "mechanics",
         element: <MechanicsComponent />,
@@ -72,6 +91,7 @@ const router = createBrowserRouter([
     loader: lastmaintainanceLoader,
   },
 ]);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NextUIProvider>

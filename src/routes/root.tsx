@@ -7,20 +7,47 @@ import { LiaUserEditSolid } from "react-icons/lia";
 import { SlSettings } from "react-icons/sl";
 import { TbLogout } from "react-icons/tb";
 import { User } from "@nextui-org/user";
+import { isAuthenticated } from "../utils/auth";
+import { redirect, useLoaderData } from "react-router-dom";
+
+type UserPropType = {
+  id?: string;
+  name?: string;
+  position?: string;
+  token?: string;
+};
+export const loader = () => {
+  if (!isAuthenticated()) {
+    return redirect("/"); // Redirect to login if not authenticated
+  }
+
+  const user = localStorage.getItem("user");
+
+  const userObj: UserPropType = JSON.parse(user as any);
+
+  return { userObj }; // Proceed if authenticated
+};
 
 export default function Root() {
   const [navlist, setNavlist] = useState("");
   const navigation = useNavigation();
 
-  console.log(navigation.location?.pathname);
+  const { userObj } = useLoaderData() as any;
+
+  // Ensure loaderData is not null before destructuring
+  if (!userObj) {
+    return <div>Loading...</div>; // Or handle the case when there's no data
+  }
+
+  // Now destructure the properties from loaderData
   return (
     <main className=" w-full h-full flex items-center fixed">
       <div className="bg-[#f3efea] w-[300px]  h-full p-5">
         <div>
           <div className="flex flex-col gap-5 w-full">
             <User
-              name="Jane Doe"
-              description="Product Designer"
+              name={userObj?.name}
+              description={userObj?.position}
               avatarProps={{
                 src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
               }}
