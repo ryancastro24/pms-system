@@ -26,6 +26,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
+import UserDetailsModal from "../components/UserDetailsModal";
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
 import {
   getAllEmployeesData,
@@ -42,6 +43,7 @@ export async function loader() {
 
 export const action: ActionFunction = async ({ request }) => {
   console.log(request.method);
+  console.log(request);
   const formData = await request.formData();
   const data: Record<string, FormDataEntryValue> = Object.fromEntries(
     formData.entries()
@@ -71,21 +73,16 @@ const positions: Position[] = [
   { posId: 4, value: "Supervisor" },
 ];
 
-type SamplePropType = {
-  id: number;
+export type SamplePropType = {
+  _id: string;
   name: string;
   username: string;
   email: string;
-  address: {
-    street: string;
-    suite: string;
-    city: string;
-    zipcode: string;
-    geo: {
-      lat: string;
-      lng: string;
-    };
-  };
+  address: string;
+  position: string;
+  age: number;
+  gender: string;
+  driver_license_number: string;
 };
 
 export type LoaderDataType = {
@@ -100,9 +97,12 @@ const MechanicsComponent = () => {
   const [searchData, setSearchData] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<SamplePropType | null>(null);
-
+  const [userDetails, setUserDetails] = useState<SamplePropType | null>(null);
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const { users } = useLoaderData() as LoaderDataType;
+  console.log(users);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
@@ -119,6 +119,16 @@ const MechanicsComponent = () => {
       );
   }, [page, users, searchData]);
 
+  const openDeteleModalFunc = (user: SamplePropType) => {
+    setSelectedUser(user);
+    setOpenDeleteModal(true);
+  };
+
+  const closeDeteleModalFunc = () => {
+    setSelectedUser(null);
+    setOpenDeleteModal(false);
+  };
+
   const openEditModal = (user: SamplePropType) => {
     setSelectedUser(user);
     setIsEditModalOpen(true);
@@ -129,6 +139,15 @@ const MechanicsComponent = () => {
     setIsEditModalOpen(false);
   };
 
+  const openDetailsModalFunc = (user: SamplePropType) => {
+    setUserDetails(user);
+    setOpenDetailsModal(true);
+  };
+
+  const closeDetailsModalFunc = () => {
+    setUserDetails(null);
+    setOpenDetailsModal(false);
+  };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
@@ -159,41 +178,33 @@ const MechanicsComponent = () => {
                   </ModalHeader>
                   <Form method="post" className="w-full">
                     <ModalBody className="grid grid-cols-2 gap-4 w-full">
-                      <Input
-                        type="text"
-                        label="Name"
-                        name="sample_name"
-                        required
-                      />
+                      <Input type="text" label="Name" name="name" required />
                       <Input
                         type="text"
                         label="Username"
-                        name="sample_username"
+                        name="username"
                         required
                       />
-                      <Input
-                        type="email"
-                        label="Email"
-                        name="sample_email"
-                        required
-                      />
-                      <Input
-                        type="number"
-                        label="Age"
-                        name="sample_age"
-                        required
-                      />
+                      <Input type="email" label="Email" name="email" required />
+                      <Input type="number" label="Age" name="age" required />
                       <Input
                         type="text"
                         label="Address"
-                        name="sample_address"
+                        name="address"
+                        required
+                      />
+
+                      <Input
+                        type="text"
+                        label="Password"
+                        name="password"
                         required
                       />
 
                       <Input
                         type="text"
                         label="Liscence Number"
-                        name="liscence_number"
+                        name="driver_license_number"
                         required
                       />
 
@@ -206,6 +217,22 @@ const MechanicsComponent = () => {
                         {(position) => (
                           <SelectItem key={position.value}>
                             {position.value}
+                          </SelectItem>
+                        )}
+                      </Select>
+
+                      <Select
+                        items={[
+                          { key: "male", label: "Male" },
+                          { key: "female", label: "Female" },
+                        ]}
+                        name="gender"
+                        label="Select Gender"
+                        className="max-w-xs"
+                      >
+                        {(gender) => (
+                          <SelectItem key={gender.key}>
+                            {gender.label}
                           </SelectItem>
                         )}
                       </Select>
@@ -264,15 +291,17 @@ const MechanicsComponent = () => {
             <TableColumn>USERNAME</TableColumn>
             <TableColumn>EMAIL</TableColumn>
             <TableColumn>ADDRESS</TableColumn>
+            <TableColumn>POSITION</TableColumn>
             <TableColumn>ACTION</TableColumn>
           </TableHeader>
           <TableBody>
             {items.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user._id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.address.street}</TableCell>
+                <TableCell>{user.address}</TableCell>
+                <TableCell>{user.position}</TableCell>
                 <TableCell>
                   <Dropdown>
                     <DropdownTrigger>
@@ -282,15 +311,23 @@ const MechanicsComponent = () => {
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Actions">
                       <DropdownItem
+                        key="details"
+                        onClick={() => openDetailsModalFunc(user)}
+                      >
+                        Details
+                      </DropdownItem>
+                      <DropdownItem
                         key="edit"
                         onClick={() => openEditModal(user)}
                       >
                         Edit
                       </DropdownItem>
+
                       <DropdownItem
                         key="delete"
                         color="danger"
                         className="text-danger"
+                        onClick={() => openDeteleModalFunc(user)}
                       >
                         Delete
                       </DropdownItem>
@@ -340,7 +377,14 @@ const MechanicsComponent = () => {
                     type="text"
                     label="Address"
                     name="address"
-                    defaultValue={selectedUser.address.street}
+                    defaultValue={selectedUser.address}
+                    required
+                  />
+
+                  <Input
+                    type="hidden"
+                    name="id"
+                    defaultValue={selectedUser._id}
                     required
                   />
                 </ModalBody>
@@ -361,6 +405,50 @@ const MechanicsComponent = () => {
           </ModalContent>
         </Modal>
       )}
+
+      <Modal
+        size="sm"
+        isOpen={openDeleteModal}
+        onOpenChange={() => setOpenDeleteModal(false)}
+      >
+        <ModalContent>
+          {() => (
+            <>
+              <ModalHeader>Are you sure Delete User Details</ModalHeader>
+              <ModalBody className="grid grid-cols-2 gap-4"></ModalBody>
+
+              <Form
+                method="post"
+                action={`/dashboard/mechanics/${selectedUser?._id}/destroy`}
+              >
+                <Input type="hidden" />
+                <ModalFooter>
+                  <Button
+                    color="danger"
+                    variant="light"
+                    onPress={() => closeDeteleModalFunc()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    isLoading={navigation.state === "submitting" ? true : false}
+                    color="danger"
+                    type="submit"
+                  >
+                    Confirm
+                  </Button>
+                </ModalFooter>
+              </Form>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <UserDetailsModal
+        user={userDetails}
+        closeDetailsModalFunc={closeDetailsModalFunc}
+        openDetailsModal={openDetailsModal}
+      />
     </div>
   );
 };

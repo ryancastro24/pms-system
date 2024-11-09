@@ -11,7 +11,6 @@ import {
 } from "@nextui-org/table";
 import { getMaintainance } from "../backend/maintainanceData";
 import { LoaderFunction } from "react-router-dom";
-import { useState } from "react";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const maintainanceId = params?.maintainanceId;

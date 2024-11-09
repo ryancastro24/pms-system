@@ -29,7 +29,7 @@ import LastMaintainancePage, {
   loader as lastmaintainanceLoader,
 } from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
-
+import { action as destroyAction } from "./routes/destroy";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -63,6 +63,7 @@ const router = createBrowserRouter([
         action: trucksAction,
         loader: trucksLoader,
       },
+
       {
         path: "mechanics",
         element: <MechanicsComponent />,
@@ -73,6 +74,12 @@ const router = createBrowserRouter([
             <h1>Oops, there was an error! </h1>
           </div>
         ),
+        children: [
+          {
+            path: ":userId/destroy",
+            action: destroyAction,
+          },
+        ],
       },
       {
         path: "editProfile",

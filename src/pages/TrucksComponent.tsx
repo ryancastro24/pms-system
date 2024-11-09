@@ -235,7 +235,7 @@ const TrucksComponent = () => {
                         name="person_in_charge"
                       >
                         {(val) => (
-                          <SelectItem key={val.id}>{val.name}</SelectItem>
+                          <SelectItem key={val._id}>{val.name}</SelectItem>
                         )}
                       </Select>
 
