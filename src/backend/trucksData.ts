@@ -1,52 +1,108 @@
+import { aside } from "framer-motion/client";
+
 export async function getAllTrucksData() {
-  //! change the actual trucks data api
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      "https://pms-mining-api.onrender.com/api/trucks",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Optional, depends on your API's requirements
+        },
+      }
+    );
+
     const data = await response.json();
-    return data; // Optional: return the result if you want to use it elsewhere
+
+    console.log(data);
+    return data;
   } catch (error) {
     console.error("Error fetching the data:", error);
   }
 }
 
+type TruckData = {
+  plate_number?: string;
+  chassis_number?: string;
+  vin_number?: string;
+  model?: string;
+  type?: string;
+  person_incharge?: string;
+  status?: string;
+  date_deployed?: string;
+};
+
 //todo: add new truck
-export async function addNewTruckData() {
-  //! change the actual trucks data api
+export async function addNewTruck(data: TruckData | null) {
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const data = await response.json();
-    return data; // Optional: return the result if you want to use it elsewhere
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      "https://pms-mining-api.onrender.com/api/trucks",
+      {
+        method: "POST", // Set the request method to POST
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+        body: JSON.stringify(data), // Send data as JSON
+      }
+    );
+    const returnData = await response.json();
+
+    console.log(returnData);
+    return returnData;
   } catch (error) {
-    console.error("Error fetching the data:", error);
+    console.error("Error adding the employee data:", error);
   }
 }
 
 //todo: update truck data
-export async function updateTruckData(id: string) {
-  //! change the actual trucks data api and parameters
-  // ! insert id in the URL
-
-  console.log(id);
+export async function updateTruckData(id: any, data: any) {
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const data = await response.json();
-    return data; // Optional: return the result if you want to use it elsewhere
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `https://pms-mining-api.onrender.com/api/trucks/${id}`,
+      {
+        method: "PUT", // Set the request method to POST
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+        body: JSON.stringify(data), // Send data as JSON
+      }
+    );
+    const returnData = await response.json();
+
+    console.log(returnData);
+    return returnData;
   } catch (error) {
-    console.error("Error fetching the data:", error);
+    console.error("Error adding the employee data:", error);
   }
 }
 
-//todo: delete truck data
 export async function deleteTruckData(id: string) {
-  //! change the actual trucks data api and parameters
-  // ! insert id in the URL
-
-  console.log(id);
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const data = await response.json();
-    return data; // Optional: return the result if you want to use it elsewhere
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `https://pms-mining-api.onrender.com/api/trucks/${id}`, // Use the id parameter directly
+      {
+        method: "DELETE", // Set the request method to DELETE
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete employee data");
+    }
+
+    const deletedData = await response.json();
+    console.log(deletedData);
+    return deletedData;
   } catch (error) {
-    console.error("Error fetching the data:", error);
+    console.error("Error deleting the employee data:", error);
   }
 }

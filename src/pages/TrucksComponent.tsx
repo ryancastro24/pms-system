@@ -5,6 +5,7 @@ import TruckCardComponent from "../components/TruckCardComponent";
 import { Select, SelectItem } from "@nextui-org/select";
 import { IoAdd } from "react-icons/io5";
 import { Button } from "@nextui-org/button";
+import { DatePicker } from "@nextui-org/date-picker";
 import {
   Modal,
   ModalContent,
@@ -22,99 +23,30 @@ import {
 } from "react-router-dom";
 import { getAllEmployeesData } from "../backend/employeesData";
 import { LoaderDataType } from "./MechanicsComponent";
-import { Link } from "react-router-dom";
+import { useNavigation } from "react-router-dom";
+import {
+  getAllTrucksData,
+  addNewTruck,
+  updateTruckData,
+} from "../backend/trucksData";
 
 export type TrucksPropType = {
-  id: number;
-  licensePlate: string;
+  _id: string;
+  plate_number: string;
   model: string;
-  capacity: number;
-  driver: string;
+  type: string;
+  chassis_number: number;
+  vin_number: string;
   status: string;
+  person_incharge: {
+    name: string;
+    _id: string;
+  };
 };
 
-const trucks = [
-  {
-    id: 1,
-    licensePlate: "ABC1234",
-    model: "Ford F-150",
-    capacity: 5000,
-    driver: "John Doe",
-    status: "Available",
-  },
-  {
-    id: 2,
-    licensePlate: "XYZ5678",
-    model: "Chevrolet Silverado",
-    capacity: 4500,
-    driver: "Jane Smith",
-    status: "On hold",
-  },
-  {
-    id: 3,
-    licensePlate: "LMN2345",
-    model: "Ram 1500",
-    capacity: 5200,
-    driver: "Mike Johnson",
-    status: "Maintainance",
-  },
-  {
-    id: 4,
-    licensePlate: "JKL8901",
-    model: "GMC Sierra",
-    capacity: 4800,
-    driver: "Sara Davis",
-    status: "Available",
-  },
-  {
-    id: 5,
-    licensePlate: "QRS2345",
-    model: "Toyota Tundra",
-    capacity: 5000,
-    driver: "Chris Wilson",
-    status: "On hold",
-  },
-  {
-    id: 6,
-    licensePlate: "TUV6789",
-    model: "Nissan Titan",
-    capacity: 4500,
-    driver: "Emily Brown",
-    status: "On hold",
-  },
-  {
-    id: 7,
-    licensePlate: "GHI3456",
-    model: "Honda Ridgeline",
-    capacity: 4000,
-    driver: "Daniel Lee",
-    status: "Maintainance",
-  },
-  {
-    id: 8,
-    licensePlate: "DEF7890",
-    model: "Ford Ranger",
-    capacity: 4200,
-    driver: "Linda Martinez",
-    status: "Available",
-  },
-  {
-    id: 9,
-    licensePlate: "OPQ1234",
-    model: "Chevrolet Colorado",
-    capacity: 4300,
-    driver: "Matthew Taylor",
-    status: "Available",
-  },
-  {
-    id: 10,
-    licensePlate: "WXY4567",
-    model: "Toyota Tacoma",
-    capacity: 4100,
-    driver: "Sophia Anderson",
-    status: "On hold",
-  },
-];
+export type TruckLoaderDataType = {
+  trucks: TrucksPropType[];
+};
 
 const truckStatus = [
   { key: "available", label: "Available" },
@@ -124,8 +56,9 @@ const truckStatus = [
 
 export async function loader() {
   const users = await getAllEmployeesData();
+  const trucks = await getAllTrucksData();
 
-  return { users };
+  return { users, trucks };
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -136,14 +69,18 @@ export const action: ActionFunction = async ({ request }) => {
     const data: Record<string, FormDataEntryValue> = Object.fromEntries(
       formData.entries()
     );
-    console.log(data);
+
+    const truckData = await addNewTruck(data);
+    console.log(truckData);
     return redirect("/dashboard/trucks");
   } else if (request.method === "PUT") {
     const formData = await request.formData();
     const data: Record<string, FormDataEntryValue> = Object.fromEntries(
       formData.entries()
     );
-    console.log(data);
+
+    const updatedData = await updateTruckData(data.id, data);
+    console.log(updatedData);
     return redirect("/dashboard/trucks");
   }
 };
@@ -152,12 +89,14 @@ const TrucksComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchData, setSearchData] = useState("");
   const { users } = useLoaderData() as LoaderDataType;
+  const { trucks } = useLoaderData() as TruckLoaderDataType;
+  console.log(trucks);
 
   const itemsPerPage = 6;
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const filteredTrucks = trucks.filter((truck) => {
-    const matchesSearch = truck.licensePlate
+    const matchesSearch = truck.plate_number
       .toUpperCase()
       .startsWith(searchData.toUpperCase());
     const matchesStatus = selectedStatus
@@ -173,6 +112,8 @@ const TrucksComponent = () => {
 
   // Calculate the total number of pages
   const totalPages = Math.ceil(trucks.length / itemsPerPage);
+
+  const navigate = useNavigation();
 
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
@@ -232,17 +173,30 @@ const TrucksComponent = () => {
                       <Select
                         items={users}
                         placeholder="Person In Charge"
-                        name="person_in_charge"
+                        name="person_incharge"
                       >
                         {(val) => (
                           <SelectItem key={val._id}>{val.name}</SelectItem>
                         )}
                       </Select>
 
-                      <Input type="text" label="Status" name="status" />
-                      <Input
-                        type="text"
+                      <Select
+                        items={[
+                          { key: "Available", label: "Available" },
+                          { key: "On Hold", label: "On Hold" },
+                          { key: "Maintainance", label: "Maintainance" },
+                        ]}
+                        placeholder="Status"
+                        name="status"
+                      >
+                        {(val) => (
+                          <SelectItem key={val.key}>{val.label}</SelectItem>
+                        )}
+                      </Select>
+
+                      <DatePicker
                         label="Date Deployed"
+                        className="max-w-[284px]"
                         name="date_deployed"
                       />
                     </ModalBody>
@@ -250,7 +204,14 @@ const TrucksComponent = () => {
                       <Button color="danger" variant="light" onPress={onClose}>
                         Cancel
                       </Button>
-                      <Button type="submit" color="primary" onPress={onClose}>
+                      <Button
+                        isLoading={
+                          navigate.state === "submitting" ? true : false
+                        }
+                        type="submit"
+                        color="primary"
+                        onPress={onClose}
+                      >
                         Add Truck
                       </Button>
                     </ModalFooter>
@@ -265,7 +226,7 @@ const TrucksComponent = () => {
       <div className=" h-[300px] overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-gray-500 scrollbar-track-gray-300 hover:scrollbar-thumb-gray-700">
         <div className="grid grid-cols-3 gap-5">
           {currentTrucks.map((val) => (
-            <TruckCardComponent key={val.id} {...val} />
+            <TruckCardComponent users={users} key={val._id} {...val} />
           ))}
         </div>
 

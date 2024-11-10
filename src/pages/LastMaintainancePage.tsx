@@ -9,21 +9,19 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/table";
-import { getMaintainance } from "../backend/maintainanceData";
+import { getMaintainanceData } from "../backend/maintainanceData";
 import { LoaderFunction } from "react-router-dom";
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const maintainanceId = params?.maintainanceId;
+// export const loader: LoaderFunction = async ({ params }) => {
+//   const maintainanceId = params?.maintainanceId;
 
-  if (!maintainanceId) {
-    throw new Error("Maintenance ID is required");
-  }
+//   if (!maintainanceId) {
+//     throw new Error("Maintenance ID is required");
+//   }
 
-  const data = await getMaintainance(maintainanceId);
-
-  console.log(data);
-  return data as string; // Adjust `string` to the actual return type of `getMaintainance` if necessary
-};
+//   console.log(data);
+//   return data as string; // Adjust `string` to the actual return type of `getMaintainance` if necessary
+// };
 
 const LastMaintainancePage = () => {
   const sampleMaintainanceData = useLoaderData();

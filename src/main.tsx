@@ -15,7 +15,10 @@ import TrucksComponent, {
   action as trucksAction,
   loader as trucksLoader,
 } from "./pages/TrucksComponent";
-import DashboardStartingPage from "./components/DashboardStartingPage";
+import DashboardStartingPage, {
+  loader as startinPageLoader,
+  action as staringPageAction,
+} from "./components/DashboardStartingPage";
 import MechanicsComponent, {
   loader as mechanicsLoader,
   action as mechanicsAction,
@@ -25,11 +28,10 @@ import EditProfileComponent, {
   action as editProfileAction,
 } from "./pages/EditProfileComponent";
 
-import LastMaintainancePage, {
-  loader as lastmaintainanceLoader,
-} from "./pages/LastMaintainancePage";
+import LastMaintainancePage from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
 import { action as destroyAction } from "./routes/destroy";
+import { action as destroyActionTruck } from "./routes/detroyTrucks";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -56,12 +58,20 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardStartingPage />,
+        loader: startinPageLoader,
+        action: staringPageAction,
       },
       {
         path: "trucks",
         element: <TrucksComponent />,
         action: trucksAction,
         loader: trucksLoader,
+        children: [
+          {
+            path: ":truckId/destroy",
+            action: destroyActionTruck,
+          },
+        ],
       },
 
       {
@@ -95,7 +105,6 @@ const router = createBrowserRouter([
   {
     path: "lastmaintainance/:maintainanceId",
     element: <LastMaintainancePage />,
-    loader: lastmaintainanceLoader,
   },
 ]);
 
