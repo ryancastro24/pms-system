@@ -27,7 +27,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
-import UserDetailsModal from "../components/UserDetailsModal";
+import { addMaintainance } from "../backend/maintainanceData";
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
 import {
   getAllEmployeesData,
@@ -37,43 +37,33 @@ import {
 import { Pagination } from "@nextui-org/pagination";
 import { redirect, useNavigation } from "react-router-dom";
 import { getMaintainanceData } from "../backend/maintainanceData";
+import { getAllTrucksData } from "../backend/trucksData";
+import { TrucksPropType } from "../pages/TrucksComponent";
+import { DatePicker } from "@nextui-org/date-picker";
+import { SamplePropType } from "../pages/MechanicsComponent";
 
 export async function loader() {
   const maintainance = await getMaintainanceData();
-  return { maintainance };
+  const users = await getAllEmployeesData();
+  const trucks = await getAllTrucksData();
+  return { maintainance, trucks, users };
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log(request.method);
-  console.log(request);
   const formData = await request.formData();
   const data: Record<string, FormDataEntryValue> = Object.fromEntries(
     formData.entries()
   );
   if (request.method === "POST") {
-    const addData = await addEmployeeData(data);
-
+    const addData = await addMaintainance(data);
     return addData;
   }
   if (request.method === "PUT") {
     const editData = await editEmployeeData(data);
-
     return editData;
   }
   return redirect("/dashboard/mechanics");
 };
-
-interface Position {
-  posId: number;
-  value: string;
-}
-
-const positions: Position[] = [
-  { posId: 1, value: "Mechanic" },
-  { posId: 2, value: "Driver" },
-  { posId: 3, value: "Checker" },
-  { posId: 4, value: "Supervisor" },
-];
 
 export type MaintainanceType = {
   _id: string;
@@ -93,80 +83,69 @@ export type MaintainanceType = {
   progress: string;
   person_incharge: {
     name: string;
+    _id: string;
   };
   truck_id: {
     status: string;
     plate_number: string;
     chassis_number: string;
+    _id: string;
   };
 };
 
-export type TruckPropType = {};
-
 export type LoaderDataType = {
   maintainance: MaintainanceType[];
+  users: SamplePropType[];
+  trucks: TrucksPropType[];
 };
 
 const DashboardStartingPage = () => {
   const navigation = useNavigation();
-
-  console.log(navigation.state);
-
   const [searchData, setSearchData] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [openDetailsModal, setOpenDetailsModal] = useState(false);
-  const { maintainance } = useLoaderData() as LoaderDataType;
+  const [selectedMaintainance, setSelectedMaintainance] =
+    useState<MaintainanceType | null>(null);
+  const { maintainance, users, trucks } = useLoaderData() as LoaderDataType;
 
-  console.log(maintainance);
-
+  const mechanicsUsers = users.filter((val) => val.position === "Mechanic");
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
   const pages = Math.ceil(maintainance.length / rowsPerPage);
 
-  // const items = useMemo(() => {
-  //   const start = (page - 1) * rowsPerPage;
-  //   const end = start + rowsPerPage;
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return maintainance
+      .slice(start, end)
+      .filter((val) =>
+        val.person_incharge.name
+          .toLowerCase()
+          .includes(searchData.toLowerCase())
+      );
+  }, [page, maintainance, searchData]);
 
-  //   return maintainance
-  //     .slice(start, end)
-  //     .filter((user) =>
-  //       user.person_incharge.name
-  //         .toLowerCase()
-  //         .includes(searchData.toLowerCase())
-  //     );
-  // }, [page, maintainance, searchData]);
+  const openEditModal = (data: MaintainanceType) => {
+    setSelectedMaintainance(data);
+    setIsEditModalOpen(true);
+  };
 
-  // const openDeteleModalFunc = (user: MaintainanceType) => {
-  //   setSelectedUser(user);
-  //   setOpenDeleteModal(true);
-  // };
+  const closeEditModal = () => {
+    setSelectedMaintainance(null);
+    setIsEditModalOpen(false);
+  };
 
-  // const closeDeteleModalFunc = () => {
-  //   setSelectedUser(null);
-  //   setOpenDeleteModal(false);
-  // };
+  const openDeleteModalFunc = (data: MaintainanceType) => {
+    setSelectedMaintainance(data);
+    setOpenDeleteModal(true);
+  };
 
-  // const openEditModal = (user: SamplePropType) => {
-  //   setSelectedUser(user);
-  //   setIsEditModalOpen(true);
-  // };
+  const closeDeleteModalFunc = () => {
+    setSelectedMaintainance(null);
+    setOpenDeleteModal(false);
+  };
 
-  // const closeEditModal = () => {
-  //   setSelectedUser(null);
-  //   setIsEditModalOpen(false);
-  // };
-
-  // const openDetailsModalFunc = (user: SamplePropType) => {
-  //   setUserDetails(user);
-  //   setOpenDetailsModal(true);
-  // };
-
-  // const closeDetailsModalFunc = () => {
-  //   setUserDetails(null);
-  //   setOpenDetailsModal(false);
-  // };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
@@ -190,94 +169,50 @@ const DashboardStartingPage = () => {
           </Button>
           <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
-              {(onClose) => (
-                <>
-                  <ModalHeader className="flex flex-col gap-1">
-                    Add New Employee
-                  </ModalHeader>
-                  <Form method="post" className="w-full">
-                    <ModalBody className="grid grid-cols-2 gap-4 w-full">
-                      <Input type="text" label="Name" name="name" required />
-                      <Input
-                        type="text"
-                        label="Username"
-                        name="username"
-                        required
-                      />
-                      <Input type="email" label="Email" name="email" required />
-                      <Input type="number" label="Age" name="age" required />
-                      <Input
-                        type="text"
-                        label="Address"
-                        name="address"
-                        required
-                      />
-
-                      <Input
-                        type="text"
-                        label="Password"
-                        name="password"
-                        required
-                      />
-
-                      <Input
-                        type="text"
-                        label="Liscence Number"
-                        name="driver_license_number"
-                        required
-                      />
-
-                      <Select
-                        items={positions}
-                        name="position"
-                        label="Select Position"
-                        className="max-w-xs"
-                      >
-                        {(position) => (
-                          <SelectItem key={position.value}>
-                            {position.value}
-                          </SelectItem>
-                        )}
-                      </Select>
-
-                      <Select
-                        items={[
-                          { key: "male", label: "Male" },
-                          { key: "female", label: "Female" },
-                        ]}
-                        name="gender"
-                        label="Select Gender"
-                        className="max-w-xs"
-                      >
-                        {(gender) => (
-                          <SelectItem key={gender.key}>
-                            {gender.label}
-                          </SelectItem>
-                        )}
-                      </Select>
-                    </ModalBody>
-                    <ModalFooter className="w-full">
-                      <Button
-                        type="button"
-                        color="danger"
-                        variant="light"
-                        onPress={onClose}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        isLoading={
-                          navigation.state === "submitting" ? true : false
-                        }
-                        type="submit"
-                        color="primary"
-                      >
-                        Add Employee
-                      </Button>
-                    </ModalFooter>
-                  </Form>
-                </>
-              )}
+              <Form method="post" className="w-full">
+                <ModalHeader>Add New Maintenance</ModalHeader>
+                <ModalBody className="grid grid-cols-2 gap-4 w-full">
+                  <Select
+                    items={mechanicsUsers}
+                    name="person_incharge"
+                    label="Select Mechanic"
+                    className="max-w-xs"
+                  >
+                    {(user) => (
+                      <SelectItem key={user._id}>{user.name}</SelectItem>
+                    )}
+                  </Select>
+                  <Select
+                    items={trucks}
+                    name="truck_id"
+                    label="Select Truck"
+                    className="max-w-xs"
+                  >
+                    {(truck) => (
+                      <SelectItem key={truck._id}>
+                        {truck.plate_number}
+                      </SelectItem>
+                    )}
+                  </Select>
+                  <DatePicker
+                    name="scheduled_date"
+                    label="Scheduled Date"
+                    className="max-w-[284px]"
+                  />
+                </ModalBody>
+                <ModalFooter className="w-full">
+                  <Button color="danger" variant="light" onPress={onOpenChange}>
+                    Cancel
+                  </Button>
+                  <Button
+                    isLoading={navigation.state === "submitting"}
+                    type="submit"
+                    color="primary"
+                  >
+                    Add Maintenance
+                  </Button>
+                </ModalFooter>
+              </Form>
             </ModalContent>
           </Modal>
         </div>
@@ -299,9 +234,7 @@ const DashboardStartingPage = () => {
               />
             </div>
           }
-          classNames={{
-            wrapper: "min-h-[222px]",
-          }}
+          classNames={{ wrapper: "min-h-[222px]" }}
           isStriped
           aria-label="Employee List Table"
         >
@@ -314,55 +247,59 @@ const DashboardStartingPage = () => {
             <TableColumn>ACTION</TableColumn>
           </TableHeader>
           <TableBody>
-            {maintainance.map((val) => (
+            {items.map((val) => (
               <TableRow key={val._id}>
                 <TableCell>{val.person_incharge.name}</TableCell>
                 <TableCell>{val.truck_id.plate_number}</TableCell>
                 <TableCell>{val.truck_id.chassis_number}</TableCell>
                 <TableCell>
                   <Chip
-                    className={`font-bold text-white `}
+                    className="font-[900] text-white"
                     color={
-                      val.status === "accepted"
-                        ? "success"
+                      val.status === "pending"
+                        ? "warning"
                         : val.status === "rejected"
                         ? "danger"
-                        : "warning"
+                        : "success"
                     }
                   >
                     {val.status}
                   </Chip>
                 </TableCell>
                 <TableCell>
+                  {" "}
                   <Chip
-                    className={`font-bold text-white `}
+                    className="font-[900] text-white"
                     color={
-                      val.progress === "done"
+                      val.progress === "ongoing"
+                        ? "warning"
+                        : val.progress === "accepted"
                         ? "success"
-                        : val.status === "failed"
-                        ? "danger"
-                        : "warning"
+                        : "danger"
                     }
                   >
-                    {val.progress}
+                    {val.status}
                   </Chip>
                 </TableCell>
-
                 <TableCell>
-                  <Dropdown>
+                  <Dropdown placement="bottom-end">
                     <DropdownTrigger>
-                      <Button isIconOnly className="text-2xl" variant="light">
+                      <Button isIconOnly variant="light" className="text-2xl">
                         <CiMenuKebab />
                       </Button>
                     </DropdownTrigger>
-                    <DropdownMenu aria-label="Actions">
-                      <DropdownItem key="details">Details</DropdownItem>
-                      <DropdownItem key="edit">Edit</DropdownItem>
-
+                    <DropdownMenu aria-label="Actions" variant="flat">
+                      <DropdownItem
+                        key="edit"
+                        onPress={() => openEditModal(val)}
+                      >
+                        Edit
+                      </DropdownItem>
                       <DropdownItem
                         key="delete"
                         color="danger"
                         className="text-danger"
+                        onPress={() => openDeleteModalFunc(val)}
                       >
                         Delete
                       </DropdownItem>
@@ -375,115 +312,70 @@ const DashboardStartingPage = () => {
         </Table>
       </div>
 
-      {/* Edit Modal */}
-      {/* {selectedUser && (
-        <Modal
-          size="2xl"
-          isOpen={isEditModalOpen}
-          onOpenChange={closeEditModal}
-        >
+      {isEditModalOpen && selectedMaintainance && (
+        <Modal isOpen={isEditModalOpen} onOpenChange={closeEditModal}>
           <ModalContent>
-            {() => (
-              <Form method="put">
-                <ModalHeader>Edit Employee</ModalHeader>
-                <ModalBody className="grid grid-cols-2 gap-4">
-                  <Input
-                    type="text"
-                    label="Name"
-                    name="name"
-                    defaultValue={selectedUser.name}
-                    required
-                  />
-                  <Input
-                    type="text"
-                    label="Username"
-                    name="username"
-                    defaultValue={selectedUser.username}
-                    required
-                  />
-                  <Input
-                    type="email"
-                    label="Email"
-                    name="email"
-                    defaultValue={selectedUser.email}
-                    required
-                  />
-                  <Input
-                    type="text"
-                    label="Address"
-                    name="address"
-                    defaultValue={selectedUser.address}
-                    required
-                  />
+            <ModalHeader>Edit Maintenance Data</ModalHeader>
+            <ModalBody>
+              <Select
+                items={mechanicsUsers}
+                name="person_incharge"
+                label="Select Mechanic"
+                defaultSelectedKeys={[selectedMaintainance.person_incharge._id]}
+              >
+                {(user) => <SelectItem key={user._id}>{user.name}</SelectItem>}
+              </Select>
 
-                  <Input
-                    type="hidden"
-                    name="id"
-                    defaultValue={selectedUser._id}
-                    required
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    onPress={closeEditModal}
-                  >
-                    Cancel
-                  </Button>
-                  <Button color="primary" type="submit">
-                    Update Profile
-                  </Button>
-                </ModalFooter>
-              </Form>
-            )}
+              <DatePicker name="scheduled_date" label="Scheduled Date" />
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={closeEditModal}>
+                Cancel
+              </Button>
+              <Button
+                isLoading={navigation.state === "submitting"}
+                type="submit"
+                color="primary"
+                form="edit-maintainance-form"
+              >
+                Save Changes
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
       )}
 
-      <Modal
-        size="sm"
-        isOpen={openDeleteModal}
-        onOpenChange={() => setOpenDeleteModal(false)}
-      >
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader>Are you sure Delete User Details</ModalHeader>
-              <ModalBody className="grid grid-cols-2 gap-4"></ModalBody>
-
-              <Form
-                method="post"
-                action={`/dashboard/mechanics/${selectedUser?._id}/destroy`}
+      {openDeleteModal && selectedMaintainance && (
+        <Modal isOpen={openDeleteModal} onOpenChange={closeDeleteModalFunc}>
+          <ModalContent>
+            <ModalHeader>Confirm Delete</ModalHeader>
+            <ModalBody>
+              Are you sure you want to delete this maintenance record?
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                color="danger"
+                variant="light"
+                onPress={closeDeleteModalFunc}
               >
-                <Input type="hidden" />
-                <ModalFooter>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    onPress={() => closeDeteleModalFunc()}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    isLoading={navigation.state === "submitting" ? true : false}
-                    color="danger"
-                    type="submit"
-                  >
-                    Confirm
-                  </Button>
-                </ModalFooter>
+                Cancel
+              </Button>
+              <Form
+                method="delete"
+                action={`/dashboard/mechanics/${selectedMaintainance._id}/delete`}
+              >
+                <Button
+                  isLoading={navigation.state === "submitting"}
+                  type="submit"
+                  color="danger"
+                >
+                  Delete
+                </Button>
               </Form>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      <UserDetailsModal
-        user={userDetails}
-        closeDetailsModalFunc={closeDetailsModalFunc}
-        openDetailsModal={openDetailsModal}
-      /> */}
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
     </div>
   );
 };

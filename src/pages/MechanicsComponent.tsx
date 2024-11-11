@@ -85,8 +85,6 @@ export type SamplePropType = {
   driver_license_number: string;
 };
 
-export type TruckPropType = {};
-
 export type LoaderDataType = {
   users: SamplePropType[];
 };

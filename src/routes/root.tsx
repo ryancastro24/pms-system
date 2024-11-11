@@ -9,6 +9,7 @@ import { TbLogout } from "react-icons/tb";
 import { User } from "@nextui-org/user";
 import { isAuthenticated } from "../utils/auth";
 import { redirect, useLoaderData } from "react-router-dom";
+import { getAllTrucksData } from "../backend/trucksData";
 
 type UserPropType = {
   id?: string;
@@ -16,7 +17,7 @@ type UserPropType = {
   position?: string;
   token?: string;
 };
-export const loader = () => {
+export const loader = async () => {
   if (!isAuthenticated()) {
     return redirect("/"); // Redirect to login if not authenticated
   }
@@ -25,14 +26,26 @@ export const loader = () => {
 
   const userObj: UserPropType = JSON.parse(user as any);
 
-  return { userObj }; // Proceed if authenticated
+  const trucks = await getAllTrucksData();
+
+  return { userObj, trucks }; // Proceed if authenticated
 };
 
 export default function Root() {
   const [navlist, setNavlist] = useState("");
   const navigation = useNavigation();
 
-  const { userObj } = useLoaderData() as any;
+  const { userObj, trucks } = useLoaderData() as any;
+
+  const availableTrucks = trucks.filter(
+    (val: any) => val.status === "Available"
+  ).length;
+  const maintainanceTrucks = trucks.filter(
+    (val: any) => val.status === "Maintainance"
+  ).length;
+  const onHoldTrucks = trucks.filter(
+    (val: any) => val.status === "On Hold"
+  ).length;
 
   // Ensure loaderData is not null before destructuring
   if (!userObj) {
@@ -172,7 +185,7 @@ export default function Root() {
               Avaiable
             </span>
 
-            <h2 className="text-6xl font-bold">120</h2>
+            <h2 className="text-6xl font-bold">{availableTrucks}</h2>
           </Card>
 
           <Card
@@ -183,7 +196,7 @@ export default function Root() {
               Under Maintainance
             </span>
 
-            <h2 className="text-6xl font-bold">10</h2>
+            <h2 className="text-6xl font-bold">{maintainanceTrucks}</h2>
           </Card>
 
           <Card
@@ -194,7 +207,7 @@ export default function Root() {
               On Hold
             </span>
 
-            <h2 className="text-6xl font-bold">32</h2>
+            <h2 className="text-6xl font-bold">{onHoldTrucks}</h2>
           </Card>
 
           <Card
@@ -205,7 +218,7 @@ export default function Root() {
               Total Number
             </span>
 
-            <h2 className="text-6xl font-bold">152</h2>
+            <h2 className="text-6xl font-bold">{trucks.length}</h2>
           </Card>
         </div>
 
