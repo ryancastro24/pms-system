@@ -52,6 +52,7 @@ export async function addEmployeeData(data: AddSampleData | null) {
 
 export async function editEmployeeData(data: AddSampleData | null) {
   try {
+    console.log(data);
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     const response = await fetch(
       `https://pms-mining-api.onrender.com/api/personnel/${data?.id}`,

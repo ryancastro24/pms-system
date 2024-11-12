@@ -10,7 +10,7 @@ import { User } from "@nextui-org/user";
 import { isAuthenticated } from "../utils/auth";
 import { redirect, useLoaderData } from "react-router-dom";
 import { getAllTrucksData } from "../backend/trucksData";
-
+import { IoAnalyticsSharp } from "react-icons/io5";
 type UserPropType = {
   id?: string;
   name?: string;
@@ -52,12 +52,22 @@ export default function Root() {
     return <div>Loading...</div>; // Or handle the case when there's no data
   }
 
+  function logout() {
+    // Remove auth token and user data from localStorage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+
+    // Optionally, redirect to the login page
+
+    return redirect("/"); // Change this path based on your application's login route
+  }
+
   // Now destructure the properties from loaderData
   return (
     <main className=" w-full h-full flex items-center fixed">
       <div className="bg-[#f3efea] w-[300px]  h-full p-5">
         <div>
-          <div className="flex flex-col gap-5 w-full">
+          <div className="flex flex-col gap-2 w-full">
             <User
               name={userObj?.name}
               description={userObj?.position}
@@ -107,11 +117,29 @@ export default function Root() {
                   <span className="">Employees List</span>
                 </Link>
               </li>
+              <li
+                onClick={() => setNavlist("analytics")}
+                className={`w-full  ${
+                  navlist == "analytics"
+                    ? "bg-[#8f5c54] text-white"
+                    : "hover:bg-[#dcd8d0]"
+                } p-2 rounded`}
+              >
+                <Link
+                  className="flex items-center gap-2 w-full"
+                  to={`analytics`}
+                >
+                  <span className="text-xl">
+                    <IoAnalyticsSharp />
+                  </span>{" "}
+                  <span className="">Analytics</span>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
 
-        <div className="mt-16">
+        <div className="mt-5">
           <div>
             <h1 className="py-2 px-3 rounded bg-[#dcd8d0] font-bold">
               Manage Profile
@@ -157,14 +185,14 @@ export default function Root() {
               </li>
 
               <li
-                onClick={() => setNavlist("settings")}
-                className={`w-full  ${
+                onClick={logout}
+                className={`w-full flex items-center gap-2 cursor-pointer ${
                   navlist == "logout"
                     ? "bg-[#8f5c54] text-white"
                     : "hover:bg-[#dcd8d0]"
                 } p-2 rounded`}
               >
-                <Link className="flex items-center gap-2 w-full" to={`logout`}>
+                <Link to={"/"} className="flex items-center gap-2">
                   <span className="text-md">
                     <TbLogout />
                   </span>{" "}

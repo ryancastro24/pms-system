@@ -26,12 +26,14 @@ import MechanicsComponent, {
 import SettingsComponent from "./pages/SettingsComponent";
 import EditProfileComponent, {
   action as editProfileAction,
+  loader as editProfileLoader,
 } from "./pages/EditProfileComponent";
-
+import { action as destroyMaintainance } from "./routes/destroyMaintainance";
 import LastMaintainancePage from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
 import { action as destroyAction } from "./routes/destroy";
 import { action as destroyActionTruck } from "./routes/detroyTrucks";
+import AnalyticsComponent from "./pages/AnalyticsComponent";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -56,11 +58,18 @@ const router = createBrowserRouter([
     loader: dashboardLoader, // Apply the loader to check authentication
     children: [
       {
-        index: true,
+        path: "/dashboard",
         element: <DashboardStartingPage />,
         loader: startinPageLoader,
         action: staringPageAction,
+        children: [
+          {
+            path: ":maintainanceId/destroy",
+            action: destroyMaintainance,
+          },
+        ],
       },
+
       {
         path: "trucks",
         element: <TrucksComponent />,
@@ -92,9 +101,15 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "analytics",
+        element: <AnalyticsComponent />,
+      },
+
+      {
         path: "editProfile",
         element: <EditProfileComponent />,
         action: editProfileAction,
+        loader: editProfileLoader,
       },
       {
         path: "settings",

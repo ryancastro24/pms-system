@@ -21,6 +21,7 @@ type AddMaintainanceType = {
   person_incharge?: string;
   truck_id?: string;
   scheduled_date?: string;
+  id?: string;
 };
 
 export async function addMaintainance(data: AddMaintainanceType | null) {
@@ -35,6 +36,51 @@ export async function addMaintainance(data: AddMaintainanceType | null) {
           "Content-Type": "application/json", // Set content type to JSON
         },
         body: JSON.stringify(data), // Send data as JSON
+      }
+    );
+    const returnData = await response.json();
+
+    console.log(returnData);
+    return returnData;
+  } catch (error) {
+    console.error("Error adding the employee data:", error);
+  }
+}
+
+export async function updateMaintainance(data: AddMaintainanceType | null) {
+  try {
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `https://pms-mining-api.onrender.com/api/maintenance/${data?.id}`,
+      {
+        method: "PUT", // Set the request method to POST
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+        body: JSON.stringify(data), // Send data as JSON
+      }
+    );
+    const returnData = await response.json();
+
+    console.log(returnData);
+    return returnData;
+  } catch (error) {
+    console.error("Error adding the employee data:", error);
+  }
+}
+
+export async function deleteMaintainance(id: string | null) {
+  try {
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `https://pms-mining-api.onrender.com/api/maintenance/${id}`,
+      {
+        method: "DELETE", // Set the request method to POST
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Set content type to JSON
+        },
       }
     );
     const returnData = await response.json();

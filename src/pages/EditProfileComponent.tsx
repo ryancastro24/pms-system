@@ -1,5 +1,12 @@
 import { Input } from "@nextui-org/input";
-import { Form, ActionFunction, redirect } from "react-router-dom";
+import {
+  Form,
+  ActionFunction,
+  redirect,
+  useLoaderData,
+  useNavigation,
+  useActionData,
+} from "react-router-dom";
 import { Button } from "@nextui-org/button";
 import {
   Modal,
@@ -10,60 +17,150 @@ import {
   ModalFooter,
 } from "@nextui-org/modal";
 import { useState } from "react";
+import { changePassword, getProfile } from "../backend/auth";
+import { editEmployeeData } from "../backend/employeesData";
+
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const data: Record<string, FormDataEntryValue> = Object.fromEntries(
-    formData.entries()
+
+  // Convert FormData entries to a Record<string, string> by filtering out Files and ensuring strings
+  const data: Record<string, string> = Object.fromEntries(
+    Array.from(formData.entries()).map(([key, value]) => [
+      key,
+      typeof value === "string" ? value : "", // Handle only string entries
+    ])
   );
+
+  if (request.method === "POST") {
+    const updatedProfileData = await editEmployeeData(data);
+    return updatedProfileData;
+  } else if (request.method === "PUT") {
+    const { password, confirmPassword } = data;
+
+    if (!password || !confirmPassword) {
+      return { error: "Password and confirm password fields are required." };
+    }
+
+    const changePasswordData = await changePassword(password, confirmPassword);
+    return changePasswordData;
+  }
 
   console.log(data);
 
   return redirect("/dashboard/editProfile");
 };
 
+export const loader = async () => {
+  const myacc = await getProfile();
+  console.log(myacc._id);
+  return { myacc };
+};
+
+type EditProfileType = {
+  myacc: {
+    _id: string;
+    name: string;
+    address: string;
+    age: string;
+    email: string;
+    driver_license_number: string;
+  };
+};
 const EditProfileComponent = () => {
+  const { myacc } = useLoaderData() as EditProfileType;
+  const navigate = useNavigation();
+  const actionData = useActionData();
+  console.log(actionData);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isPassworCorrect, setIsPasswordCorrect] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordIndicator, setPasswordIndicator] = useState("");
+
+  const confirmChangePassword = async () => {
+    try {
+      const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+      const response = await fetch(
+        "https://pms-mining-api.onrender.com/api/auth/confirmPassword",
+        {
+          method: "POST", // Set the request method to POST
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Authorization header
+            "Content-Type": "application/json", // Set content type to JSON
+          },
+          body: JSON.stringify({ password: password }), // Send data as JSON
+        }
+      );
+      const returnData = await response.json();
+
+      if (returnData.message === "approved") {
+        setPasswordIndicator(returnData.message);
+        setIsPasswordCorrect(true);
+      } else {
+        setPasswordIndicator(returnData.message);
+      }
+    } catch (error) {
+      console.error("Error adding the employee data:", error);
+    }
+  };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <h2 className="text-xl font-bold">Edit Profile</h2>
 
       <Form method="post" className="flex flex-col gap-16">
         <div className="grid grid-cols-3 gap-5 w-full">
+          <Input value={myacc._id} type="hidden" name="id" />
           <Input
-            defaultValue={"samle default data"}
+            defaultValue={myacc.name}
             type="text"
             label="Name"
             name="name"
           />
           <Input
-            defaultValue={"sample@email.com"}
+            defaultValue={myacc.email}
             type="email"
             label="Email"
             name="email"
           />
           <Input
-            defaultValue={"samle default data"}
+            defaultValue={myacc.address}
             type="text"
             label="Address"
             name="address"
           />
-          <Input defaultValue={"22"} type="number" label="Age" name="age" />
           <Input
-            defaultValue={"samle default data"}
+            defaultValue={myacc.age}
+            type="number"
+            label="Age"
+            name="age"
+          />
+          <Input
+            defaultValue={myacc.driver_license_number}
             type="text"
             label="Liscense Number"
-            name="liscene_number"
+            name="driver_license_number"
           />
+          <div className="flex flex-col gap-2">
+            <Button
+              onPress={onOpen}
+              type="button"
+              color="success"
+              className="text-white"
+            >
+              {passwordIndicator === "" || passwordIndicator === "rejected"
+                ? "Confirm Password"
+                : "Change Password"}
+            </Button>
 
-          <Button
-            onPress={onOpen}
-            type="button"
-            color="success"
-            className="text-white"
-          >
-            Change Password
-          </Button>
+            {passwordIndicator === "rejected" ? (
+              <h2 className="text-danger text-xs">
+                Incorrect Password ,Try Again
+              </h2>
+            ) : passwordIndicator === "approved" ? (
+              <h2 className="text-success text-xs">Password Approved</h2>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -71,7 +168,11 @@ const EditProfileComponent = () => {
             Cancel
           </Button>
 
-          <Button type="submit" color="primary">
+          <Button
+            isLoading={navigate.state === "submitting" ? true : false}
+            type="submit"
+            color="primary"
+          >
             Update Profile
           </Button>
         </div>
@@ -82,7 +183,7 @@ const EditProfileComponent = () => {
           {(onClose) => (
             <>
               {isPassworCorrect ? (
-                <Form method="post">
+                <Form method="put">
                   <ModalHeader className="flex flex-col gap-1">
                     Change Password
                   </ModalHeader>
@@ -90,13 +191,12 @@ const EditProfileComponent = () => {
                     <Input
                       type="password"
                       label="Enter New Password"
-                      name="new_password"
+                      name="password"
                     />
                     <Input
-                      value={"new password"}
                       type="password"
                       label="Confirm Password"
-                      name="confirm_password"
+                      name="confirmPassword"
                     />
                   </ModalBody>
                   <ModalFooter>
@@ -109,26 +209,31 @@ const EditProfileComponent = () => {
                   </ModalFooter>
                 </Form>
               ) : (
-                <Form method="post">
+                <>
                   <ModalHeader className="flex flex-col gap-1">
-                    Change Password
+                    Confirm Password
                   </ModalHeader>
                   <ModalBody>
                     <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       type="password"
                       label="Enter  Password"
-                      name="password"
                     />
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="light" onPress={onClose}>
                       Close
                     </Button>
-                    <Button type="submit" color="primary" onPress={onClose}>
+                    <Button
+                      onClick={confirmChangePassword}
+                      color="primary"
+                      onPress={onClose}
+                    >
                       Submit
                     </Button>
                   </ModalFooter>
-                </Form>
+                </>
               )}
             </>
           )}

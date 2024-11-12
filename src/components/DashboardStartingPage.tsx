@@ -9,8 +9,8 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/table";
-import { GoPersonAdd } from "react-icons/go";
 import { Button } from "@nextui-org/button";
+import { AiOutlineFileAdd } from "react-icons/ai";
 import { CiMenuKebab } from "react-icons/ci";
 import { Select, SelectItem } from "@nextui-org/select";
 import {
@@ -27,7 +27,10 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
-import { addMaintainance } from "../backend/maintainanceData";
+import {
+  addMaintainance,
+  updateMaintainance,
+} from "../backend/maintainanceData";
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
 import {
   getAllEmployeesData,
@@ -59,8 +62,8 @@ export const action: ActionFunction = async ({ request }) => {
     return addData;
   }
   if (request.method === "PUT") {
-    const editData = await editEmployeeData(data);
-    return editData;
+    const editedData = await updateMaintainance(data);
+    return editedData;
   }
   return redirect("/dashboard/mechanics");
 };
@@ -120,7 +123,7 @@ const DashboardStartingPage = () => {
     return maintainance
       .slice(start, end)
       .filter((val) =>
-        val.person_incharge.name
+        val.truck_id.plate_number
           .toLowerCase()
           .includes(searchData.toLowerCase())
       );
@@ -138,6 +141,7 @@ const DashboardStartingPage = () => {
 
   const openDeleteModalFunc = (data: MaintainanceType) => {
     setSelectedMaintainance(data);
+
     setOpenDeleteModal(true);
   };
 
@@ -145,7 +149,6 @@ const DashboardStartingPage = () => {
     setSelectedMaintainance(null);
     setOpenDeleteModal(false);
   };
-
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
@@ -153,7 +156,7 @@ const DashboardStartingPage = () => {
         <div className="flex items-center gap-2">
           <Input
             type="search"
-            label="Search Name..."
+            label="Search Plate Number..."
             className="w-[300px] h-[45px]"
             radius="sm"
             value={searchData}
@@ -165,7 +168,7 @@ const DashboardStartingPage = () => {
             color="primary"
             onPress={onOpen}
           >
-            <GoPersonAdd />
+            <AiOutlineFileAdd />
           </Button>
           <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
@@ -241,7 +244,7 @@ const DashboardStartingPage = () => {
           <TableHeader className="sticky top-0 bg-white z-10">
             <TableColumn>PERSON IN CHARGE</TableColumn>
             <TableColumn>TRUCK PLATE NUMBER</TableColumn>
-            <TableColumn>TRUCK CHASSIS NUMBER</TableColumn>
+            <TableColumn>SCHEDULED DATE</TableColumn>
             <TableColumn>REQUEST STATUS</TableColumn>
             <TableColumn>PROGRESS</TableColumn>
             <TableColumn>ACTION</TableColumn>
@@ -251,7 +254,7 @@ const DashboardStartingPage = () => {
               <TableRow key={val._id}>
                 <TableCell>{val.person_incharge.name}</TableCell>
                 <TableCell>{val.truck_id.plate_number}</TableCell>
-                <TableCell>{val.truck_id.chassis_number}</TableCell>
+                <TableCell>{val.scheduled_date}</TableCell>
                 <TableCell>
                   <Chip
                     className="font-[900] text-white"
@@ -316,31 +319,42 @@ const DashboardStartingPage = () => {
         <Modal isOpen={isEditModalOpen} onOpenChange={closeEditModal}>
           <ModalContent>
             <ModalHeader>Edit Maintenance Data</ModalHeader>
-            <ModalBody>
-              <Select
-                items={mechanicsUsers}
-                name="person_incharge"
-                label="Select Mechanic"
-                defaultSelectedKeys={[selectedMaintainance.person_incharge._id]}
-              >
-                {(user) => <SelectItem key={user._id}>{user.name}</SelectItem>}
-              </Select>
 
-              <DatePicker name="scheduled_date" label="Scheduled Date" />
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={closeEditModal}>
-                Cancel
-              </Button>
-              <Button
-                isLoading={navigation.state === "submitting"}
-                type="submit"
-                color="primary"
-                form="edit-maintainance-form"
-              >
-                Save Changes
-              </Button>
-            </ModalFooter>
+            <Form method="PUT">
+              <ModalBody>
+                <Input
+                  type="hidden"
+                  name="id"
+                  value={selectedMaintainance._id}
+                />
+                <Select
+                  items={mechanicsUsers}
+                  name="person_incharge"
+                  label="Select Mechanic"
+                  defaultSelectedKeys={[
+                    selectedMaintainance.person_incharge._id,
+                  ]}
+                >
+                  {(user) => (
+                    <SelectItem key={user._id}>{user.name}</SelectItem>
+                  )}
+                </Select>
+
+                <DatePicker name="scheduled_date" label="Scheduled Date" />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={closeEditModal}>
+                  Cancel
+                </Button>
+                <Button
+                  isLoading={navigation.state === "submitting"}
+                  type="submit"
+                  color="primary"
+                >
+                  Save Changes
+                </Button>
+              </ModalFooter>
+            </Form>
           </ModalContent>
         </Modal>
       )}
@@ -349,6 +363,7 @@ const DashboardStartingPage = () => {
         <Modal isOpen={openDeleteModal} onOpenChange={closeDeleteModalFunc}>
           <ModalContent>
             <ModalHeader>Confirm Delete</ModalHeader>
+
             <ModalBody>
               Are you sure you want to delete this maintenance record?
             </ModalBody>
@@ -361,8 +376,8 @@ const DashboardStartingPage = () => {
                 Cancel
               </Button>
               <Form
-                method="delete"
-                action={`/dashboard/mechanics/${selectedMaintainance._id}/delete`}
+                method="post"
+                action={`/dashboard/${selectedMaintainance._id}/destroy`}
               >
                 <Button
                   isLoading={navigation.state === "submitting"}
