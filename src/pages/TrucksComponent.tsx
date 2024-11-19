@@ -42,6 +42,7 @@ export type TrucksPropType = {
     name: string;
     _id: string;
   };
+  date_deployed: string;
 };
 
 export type TruckLoaderDataType = {

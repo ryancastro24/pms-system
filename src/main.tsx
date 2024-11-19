@@ -33,7 +33,9 @@ import LastMaintainancePage from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
 import { action as destroyAction } from "./routes/destroy";
 import { action as destroyActionTruck } from "./routes/detroyTrucks";
-import AnalyticsComponent from "./pages/AnalyticsComponent";
+import AnalyticsComponent, {
+  loader as analyticsLoader,
+} from "./pages/AnalyticsComponent";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -103,6 +105,7 @@ const router = createBrowserRouter([
       {
         path: "analytics",
         element: <AnalyticsComponent />,
+        loader: analyticsLoader,
       },
 
       {
