@@ -148,8 +148,8 @@ const DashboardStartingPage = () => {
   };
   return (
     <div className="w-full h-full flex flex-col  gap-4 mt-8">
-      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] ] flex justify-between items-center">
-        <h2>Maintainance Updates</h2>
+      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
+        <h2 className="dark:text-white">Maintainance Updates</h2>
         <div className="flex items-center gap-2">
           <Input
             type="search"
