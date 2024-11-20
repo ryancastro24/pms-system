@@ -150,8 +150,8 @@ const MechanicsComponent = () => {
   };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
-      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
-        <h2>List of Employees</h2>
+      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
+        <h2 className="dark:text-white">List of Employees</h2>
         <div className="flex items-center gap-2">
           <Input
             type="search"
@@ -173,7 +173,7 @@ const MechanicsComponent = () => {
             <ModalContent>
               {(onClose) => (
                 <>
-                  <ModalHeader className="flex flex-col gap-1">
+                  <ModalHeader className="flex flex-col gap-1 dark:text-white">
                     Add New Employee
                   </ModalHeader>
                   <Form method="post" className="w-full">
@@ -297,12 +297,18 @@ const MechanicsComponent = () => {
           <TableBody>
             {items.map((user) => (
               <TableRow key={user._id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.address}</TableCell>
-                <TableCell>{user.position}</TableCell>
-                <TableCell>
+                <TableCell className="dark:text-white">{user.name}</TableCell>
+                <TableCell className="dark:text-white">
+                  {user.username}
+                </TableCell>
+                <TableCell className="dark:text-white">{user.email}</TableCell>
+                <TableCell className="dark:text-white">
+                  {user.address}
+                </TableCell>
+                <TableCell className="dark:text-white">
+                  {user.position}
+                </TableCell>
+                <TableCell className="dark:text-white">
                   <Dropdown>
                     <DropdownTrigger>
                       <Button isIconOnly className="text-2xl" variant="light">
@@ -311,12 +317,14 @@ const MechanicsComponent = () => {
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Actions">
                       <DropdownItem
+                        className="dark:text-white"
                         key="details"
                         onClick={() => openDetailsModalFunc(user)}
                       >
                         Details
                       </DropdownItem>
                       <DropdownItem
+                        className="dark:text-white"
                         key="edit"
                         onClick={() => openEditModal(user)}
                       >
@@ -326,7 +334,7 @@ const MechanicsComponent = () => {
                       <DropdownItem
                         key="delete"
                         color="danger"
-                        className="text-danger"
+                        className="text-danger "
                         onClick={() => openDeteleModalFunc(user)}
                       >
                         Delete

@@ -3,7 +3,7 @@ import { Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/components/ThemeProvider"; // Assuming you have a custom theme provider
 
-const SettingsComponent = () => {
+const ThemeButton = () => {
   const { theme, setTheme } = useTheme(); // Use theme from context
   const [isChecked, setIsChecked] = useState(theme === "dark"); // Set initial state based on the current theme
 
@@ -19,15 +19,14 @@ const SettingsComponent = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 mt-8">
-      <h2>Settings Component</h2>
-
+    <div className="w-full h-full flex flex-col gap-4">
       <div className="flex items-center gap-2">
         {/* Display Sun/Moon icons based on the theme */}
-        {isChecked ? <Moon /> : <Sun />}
+        {isChecked ? <Moon color="white" /> : <Sun />}
 
         {/* Switch component */}
         <Switch
+          size="sm"
           isSelected={isChecked}
           onChange={handleSwitchChange}
           aria-label="Toggle theme"
@@ -37,4 +36,4 @@ const SettingsComponent = () => {
   );
 };
 
-export default SettingsComponent;
+export default ThemeButton;

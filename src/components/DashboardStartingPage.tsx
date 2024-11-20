@@ -45,6 +45,7 @@ export async function loader() {
   const maintainance = await getMaintainanceData();
   const users = await getAllEmployeesData();
   const trucks = await getAllTrucksData();
+  console.log(maintainance);
   return { maintainance, trucks, users };
 }
 
@@ -146,8 +147,8 @@ const DashboardStartingPage = () => {
     setOpenDeleteModal(false);
   };
   return (
-    <div className="w-full h-full flex flex-col gap-4 mt-8">
-      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
+    <div className="w-full h-full flex flex-col  gap-4 mt-8">
+      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] ] flex justify-between items-center">
         <h2>Maintainance Updates</h2>
         <div className="flex items-center gap-2">
           <Input

@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { NextUIProvider } from "@nextui-org/react";
+import { ThemeProvider } from "./components/ThemeProvider";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -129,9 +130,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NextUIProvider>
-      <div className="w-full h-[100vh] ">
-        <RouterProvider router={router} />
-      </div>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <div className="w-full h-[100vh] dark:bg-[#434343]">
+          <RouterProvider router={router} />
+        </div>
+      </ThemeProvider>
     </NextUIProvider>
   </StrictMode>
 );

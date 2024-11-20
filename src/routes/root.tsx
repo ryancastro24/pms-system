@@ -4,13 +4,14 @@ import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { Card } from "@nextui-org/card";
 import { useState } from "react";
 import { LiaUserEditSolid } from "react-icons/lia";
-import { SlSettings } from "react-icons/sl";
 import { TbLogout } from "react-icons/tb";
 import { User } from "@nextui-org/user";
 import { isAuthenticated } from "../utils/auth";
 import { redirect, useLoaderData } from "react-router-dom";
 import { getAllTrucksData } from "../backend/trucksData";
 import { IoAnalyticsSharp } from "react-icons/io5";
+import ThemeButton from "@/components/ThemButton";
+import LoadingComponent from "@/components/LoadingComponent";
 type UserPropType = {
   id?: string;
   name?: string;
@@ -65,16 +66,20 @@ export default function Root() {
   // Now destructure the properties from loaderData
   return (
     <main className=" w-full h-full flex items-center fixed">
-      <div className="bg-[#f3efea] w-[300px]  h-full p-5">
+      <div className="bg-[#f3efea] dark:bg-[#27272A] w-[300px]  h-full p-5">
         <div>
           <div className="flex flex-col gap-2 w-full">
-            <User
-              name={userObj?.name}
-              description={userObj?.position}
-              avatarProps={{
-                src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-              }}
-            />
+            <div className="flex flex-col items-start gap-5 mb-8">
+              <User
+                name={userObj?.name}
+                description={userObj?.position}
+                avatarProps={{
+                  src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                }}
+              />
+
+              <ThemeButton />
+            </div>
             <h1
               onClick={() => setNavlist("dashboard")}
               className="py-2 px-3 rounded bg-[#dcd8d0] font-bold"
@@ -89,7 +94,7 @@ export default function Root() {
                 className={`w-full  ${
                   navlist == "trucks"
                     ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
                 <Link className="flex items-center gap-2 w-full" to={`trucks`}>
@@ -104,7 +109,7 @@ export default function Root() {
                 className={`w-full  ${
                   navlist == "mechanics"
                     ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
                 <Link
@@ -121,8 +126,8 @@ export default function Root() {
                 onClick={() => setNavlist("analytics")}
                 className={`w-full  ${
                   navlist == "analytics"
-                    ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
+                    ? "bg-[#8f5c54] text-white "
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black  dark:text-white"
                 } p-2 rounded`}
               >
                 <Link
@@ -152,7 +157,7 @@ export default function Root() {
                 className={`w-full  ${
                   navlist == "editProfile"
                     ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
                 <Link
@@ -165,31 +170,13 @@ export default function Root() {
                   <span className="">Update Profile</span>
                 </Link>
               </li>
-              <li
-                onClick={() => setNavlist("settings")}
-                className={`w-full  ${
-                  navlist == "settings"
-                    ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
-                } p-2 rounded`}
-              >
-                <Link
-                  className="flex items-center gap-2 w-full"
-                  to={`settings`}
-                >
-                  <span className="text-md">
-                    <SlSettings />
-                  </span>{" "}
-                  <span className="">Settings</span>
-                </Link>
-              </li>
 
               <li
                 onClick={logout}
                 className={`w-full flex items-center gap-2 cursor-pointer ${
                   navlist == "logout"
                     ? "bg-[#8f5c54] text-white"
-                    : "hover:bg-[#dcd8d0]"
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
                 <Link to={"/"} className="flex items-center gap-2">
@@ -250,13 +237,7 @@ export default function Root() {
           </Card>
         </div>
 
-        {navigation.state === "loading" ? (
-          <div>
-            <h1>Loading..</h1>
-          </div>
-        ) : (
-          <Outlet />
-        )}
+        {navigation.state === "loading" ? <LoadingComponent /> : <Outlet />}
       </div>
     </main>
   );

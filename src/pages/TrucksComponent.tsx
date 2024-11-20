@@ -118,14 +118,14 @@ const TrucksComponent = () => {
 
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
-      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] flex justify-between items-center">
-        <h2>List of Trucks</h2>
+      <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
+        <h2 className="dark:text-white">List of Trucks</h2>
 
         <div className="flex items-center gap-5">
           <Select
             items={truckStatus}
             placeholder="Select Status"
-            className="w-[300px]"
+            className="w-[300px] dark:bg-[#222121] dark:hover:bg-[#222121]"
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
             {(val) => <SelectItem key={val.label}>{val.label}</SelectItem>}

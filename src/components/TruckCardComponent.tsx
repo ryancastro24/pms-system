@@ -50,19 +50,21 @@ const TruckCardComponent = ({
 
   return (
     <>
-      <Card className={`w-full h-44 p-2 rounded bg-[#f3efea] relative`}>
+      <Card
+        className={`w-full h-44 p-2 rounded bg-[#f3efea] dark:bg-[#27272A] relative`}
+      >
         <CardHeader className="flex items-center gap-2">
-          <strong>Plate Number:</strong>
-          <span className="font-light">{plate_number}</span>
+          <strong className="dark:text-white">Plate Number:</strong>
+          <span className="font-light dark:text-white">{plate_number}</span>
         </CardHeader>
 
         <CardBody>
-          <span className="text-sm">
+          <span className="text-sm dark:text-white">
             <strong>Driver: </strong>
             {person_incharge.name}
           </span>
 
-          <span className="text-sm">
+          <span className="text-sm dark:text-white">
             <strong>Model: </strong>
             {model}
           </span>
