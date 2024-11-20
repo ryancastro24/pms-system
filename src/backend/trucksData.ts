@@ -1,5 +1,3 @@
-import { aside } from "framer-motion/client";
-
 export async function getAllTrucksData() {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage

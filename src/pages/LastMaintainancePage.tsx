@@ -1,5 +1,5 @@
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { Link, useLoaderData } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@nextui-org/button";
 import {
   Table,
@@ -9,8 +9,8 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/table";
-import { getMaintainanceData } from "../backend/maintainanceData";
-import { LoaderFunction } from "react-router-dom";
+// import { getMaintainanceData } from "../backend/maintainanceData";
+// import { LoaderFunction } from "react-router-dom";
 
 // export const loader: LoaderFunction = async ({ params }) => {
 //   const maintainanceId = params?.maintainanceId;
@@ -24,7 +24,7 @@ import { LoaderFunction } from "react-router-dom";
 // };
 
 const LastMaintainancePage = () => {
-  const sampleMaintainanceData = useLoaderData();
+  // const sampleMaintainanceData = useLoaderData();
 
   return (
     <div className="absolute  z-20 w-full h-full grid grid-cols-2 py-10 px-16">

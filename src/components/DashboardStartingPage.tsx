@@ -32,11 +32,7 @@ import {
   updateMaintainance,
 } from "../backend/maintainanceData";
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
-import {
-  getAllEmployeesData,
-  addEmployeeData,
-  editEmployeeData,
-} from "../backend/employeesData";
+import { getAllEmployeesData } from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
 import { redirect, useNavigation } from "react-router-dom";
 import { getMaintainanceData } from "../backend/maintainanceData";
