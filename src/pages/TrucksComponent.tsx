@@ -128,7 +128,11 @@ const TrucksComponent = () => {
             className="w-[300px] dark:bg-[#222121] dark:hover:bg-[#222121]"
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
-            {(val) => <SelectItem key={val.label}>{val.label}</SelectItem>}
+            {(val) => (
+              <SelectItem className="dark:text-white" key={val.label}>
+                {val.label}
+              </SelectItem>
+            )}
           </Select>
 
           <Input
