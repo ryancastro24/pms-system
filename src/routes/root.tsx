@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigation } from "react-router-dom";
+import { Outlet, Link, useNavigation, useNavigate } from "react-router-dom";
 import { TbBackhoe } from "react-icons/tb";
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { Card } from "@nextui-org/card";
@@ -12,12 +12,15 @@ import { getAllTrucksData } from "../backend/trucksData";
 import { IoAnalyticsSharp } from "react-icons/io5";
 import ThemeButton from "@/components/ThemButton";
 import LoadingComponent from "@/components/LoadingComponent";
+import { MdOutlineErrorOutline } from "react-icons/md";
+
 type UserPropType = {
   id?: string;
   name?: string;
   position?: string;
   token?: string;
 };
+
 export const loader = async () => {
   if (!isAuthenticated()) {
     return redirect("/"); // Redirect to login if not authenticated
@@ -35,18 +38,20 @@ export const loader = async () => {
 export default function Root() {
   const [navlist, setNavlist] = useState("");
   const navigation = useNavigation();
+  const navigate = useNavigate();
 
   const { userObj, trucks } = useLoaderData() as any;
 
-  const availableTrucks = trucks.filter(
-    (val: any) => val.status === "Available"
-  ).length;
-  const maintainanceTrucks = trucks.filter(
-    (val: any) => val.status === "Maintainance"
-  ).length;
-  const onHoldTrucks = trucks.filter(
-    (val: any) => val.status === "On Hold"
-  ).length;
+  // Ensure trucks is always an array
+  const availableTrucks = Array.isArray(trucks)
+    ? trucks.filter((val: any) => val.status === "Available").length
+    : 0;
+  const maintainanceTrucks = Array.isArray(trucks)
+    ? trucks.filter((val: any) => val.status === "Maintainance").length
+    : 0;
+  const onHoldTrucks = Array.isArray(trucks)
+    ? trucks.filter((val: any) => val.status === "On Hold").length
+    : 0;
 
   // Ensure loaderData is not null before destructuring
   if (!userObj) {
@@ -57,10 +62,7 @@ export default function Root() {
     // Remove auth token and user data from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-
-    // Optionally, redirect to the login page
-
-    return redirect("/"); // Change this path based on your application's login route
+    navigate("/");
   }
 
   // Now destructure the properties from loaderData
@@ -69,7 +71,7 @@ export default function Root() {
       <div className="bg-[#f3efea] dark:bg-[#27272A] w-[300px]  h-full p-5">
         <div>
           <div className="flex flex-col gap-2 w-full">
-            <div className="flex flex-col items-start gap-5 mb-8">
+            <div className="flex flex-col items-start gap-3 mb-8">
               <User
                 name={userObj?.name}
                 description={userObj?.position}
@@ -77,7 +79,6 @@ export default function Root() {
                   src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                 }}
               />
-
               <ThemeButton />
             </div>
             <h1
@@ -88,7 +89,7 @@ export default function Root() {
             </h1>
           </div>
           <nav className="w-full py-5">
-            <ul className={`w-full flex flex-col items-start gap-6`}>
+            <ul className={`w-full flex flex-col items-start gap-3`}>
               <li
                 onClick={() => setNavlist("trucks")}
                 className={`w-full  ${
@@ -140,6 +141,22 @@ export default function Root() {
                   <span className="">Analytics</span>
                 </Link>
               </li>
+
+              <li
+                onClick={() => setNavlist("issues")}
+                className={`w-full  ${
+                  navlist == "issues"
+                    ? "bg-[#8f5c54] text-white "
+                    : "hover:bg-[#dcd8d0] dark:hover:text-black  dark:text-white"
+                } p-2 rounded`}
+              >
+                <Link className="flex items-center gap-2 w-full" to={`issues`}>
+                  <span className="text-xl">
+                    <MdOutlineErrorOutline />
+                  </span>{" "}
+                  <span className="">Issues</span>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
@@ -179,12 +196,10 @@ export default function Root() {
                     : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
-                <Link to={"/"} className="flex items-center gap-2">
-                  <span className="text-md">
-                    <TbLogout />
-                  </span>{" "}
-                  <span className="">Logout</span>
-                </Link>
+                <span className="text-md">
+                  <TbLogout />
+                </span>{" "}
+                <span className="">Logout</span>
               </li>
             </ul>
           </nav>
@@ -197,9 +212,8 @@ export default function Root() {
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
-              Avaiable
+              Available
             </span>
-
             <h2 className="text-6xl font-bold">{availableTrucks}</h2>
           </Card>
 
@@ -208,9 +222,8 @@ export default function Root() {
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
-              Under Maintainance
+              Under Maintenance
             </span>
-
             <h2 className="text-6xl font-bold">{maintainanceTrucks}</h2>
           </Card>
 
@@ -221,7 +234,6 @@ export default function Root() {
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
               On Hold
             </span>
-
             <h2 className="text-6xl font-bold">{onHoldTrucks}</h2>
           </Card>
 
@@ -232,7 +244,6 @@ export default function Root() {
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
               Total Number
             </span>
-
             <h2 className="text-6xl font-bold">{trucks.length}</h2>
           </Card>
         </div>

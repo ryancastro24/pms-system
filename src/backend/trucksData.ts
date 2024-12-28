@@ -1,15 +1,13 @@
+const apiUrl = import.meta.env.VITE_API_URL;
 export async function getAllTrucksData() {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/trucks",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Optional, depends on your API's requirements
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/trucks`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Optional, depends on your API's requirements
+      },
+    });
 
     const data = await response.json();
 
@@ -35,17 +33,14 @@ type TruckData = {
 export async function addNewTruck(data: TruckData | null) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/trucks",
-      {
-        method: "POST", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/trucks`, {
+      method: "POST", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const returnData = await response.json();
 
     console.log(returnData);
@@ -59,17 +54,14 @@ export async function addNewTruck(data: TruckData | null) {
 export async function updateTruckData(id: any, data: any) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/trucks/${id}`,
-      {
-        method: "PUT", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/trucks/${id}`, {
+      method: "PUT", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const returnData = await response.json();
 
     console.log(returnData);
@@ -83,7 +75,7 @@ export async function deleteTruckData(id: string) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/trucks/${id}`, // Use the id parameter directly
+      `${apiUrl}/api/trucks/${id}`, // Use the id parameter directly
       {
         method: "DELETE", // Set the request method to DELETE
         headers: {

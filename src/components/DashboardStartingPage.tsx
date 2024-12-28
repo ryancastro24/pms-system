@@ -41,6 +41,7 @@ import { TrucksPropType } from "../pages/TrucksComponent";
 import { DatePicker } from "@nextui-org/date-picker";
 import { SamplePropType } from "../pages/MechanicsComponent";
 
+// Ensure proper typing in the loader
 export async function loader() {
   const maintainance = await getMaintainanceData();
   const users = await getAllEmployeesData();
@@ -49,6 +50,7 @@ export async function loader() {
   return { maintainance, trucks, users };
 }
 
+// Correct typing for the action function
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const data: Record<string, FormDataEntryValue> = Object.fromEntries(
@@ -93,10 +95,9 @@ export type MaintainanceType = {
   };
 };
 
-export type LoaderDataType = {
-  maintainance: MaintainanceType[];
-  users: SamplePropType[];
-  trucks: TrucksPropType[];
+type MaintainanceResponse = {
+  message?: string;
+  data: MaintainanceType[];
 };
 
 const DashboardStartingPage = () => {
@@ -107,23 +108,40 @@ const DashboardStartingPage = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedMaintainance, setSelectedMaintainance] =
     useState<MaintainanceType | null>(null);
-  const { maintainance, users, trucks } = useLoaderData() as LoaderDataType;
+  const { maintainance, users, trucks } = useLoaderData() as {
+    maintainance: MaintainanceResponse;
+    trucks: TrucksPropType[];
+    users: SamplePropType[];
+  };
+
+  console.log("maintainace returned ", maintainance);
 
   const mechanicsUsers = users.filter((val) => val.position === "Mechanic");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const rowsPerPage = 10;
-  const pages = Math.ceil(maintainance.length / rowsPerPage);
+
+  // Fix pagination logic and error handling
+  const pages = Array.isArray(maintainance)
+    ? Math.ceil(maintainance.length / rowsPerPage)
+    : 0;
 
   const items = useMemo(() => {
+    if (!Array.isArray(maintainance)) {
+      return []; // Return an empty array if maintainance is not an array
+    }
+
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return maintainance
-      .slice(start, end)
-      .filter((val) =>
-        val.truck_id.plate_number
-          .toLowerCase()
-          .includes(searchData.toLowerCase())
-      );
+
+    const slicedData = maintainance.slice(start, end);
+
+    const filteredItems = slicedData.filter((val: MaintainanceType) =>
+      val.truck_id?.plate_number
+        .toLowerCase()
+        .includes(searchData.toLowerCase())
+    );
+
+    return filteredItems.length > 0 ? filteredItems : [];
   }, [page, maintainance, searchData]);
 
   const openEditModal = (data: MaintainanceType) => {
@@ -138,7 +156,6 @@ const DashboardStartingPage = () => {
 
   const openDeleteModalFunc = (data: MaintainanceType) => {
     setSelectedMaintainance(data);
-
     setOpenDeleteModal(true);
   };
 
@@ -146,8 +163,10 @@ const DashboardStartingPage = () => {
     setSelectedMaintainance(null);
     setOpenDeleteModal(false);
   };
+
+  console.log(items);
   return (
-    <div className="w-full h-full flex flex-col  gap-4 mt-8">
+    <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
         <h2 className="dark:text-white">Maintainance Updates</h2>
         <div className="flex items-center gap-2">
@@ -246,12 +265,18 @@ const DashboardStartingPage = () => {
             <TableColumn>PROGRESS</TableColumn>
             <TableColumn>ACTION</TableColumn>
           </TableHeader>
-          <TableBody>
-            {items.map((val) => (
+          <TableBody emptyContent={"No rows to display."}>
+            {items.map((val: MaintainanceType) => (
               <TableRow key={val._id}>
-                <TableCell>{val.person_incharge.name}</TableCell>
-                <TableCell>{val.truck_id.plate_number}</TableCell>
-                <TableCell>{val.scheduled_date}</TableCell>
+                <TableCell className="dark:text-white">
+                  {val.person_incharge.name}
+                </TableCell>
+                <TableCell className="dark:text-white">
+                  {val.truck_id.plate_number}
+                </TableCell>
+                <TableCell className="dark:text-white">
+                  {val.scheduled_date}
+                </TableCell>
                 <TableCell>
                   <Chip
                     className="font-[900] text-white"
@@ -273,12 +298,12 @@ const DashboardStartingPage = () => {
                     color={
                       val.progress === "ongoing"
                         ? "warning"
-                        : val.progress === "accepted"
+                        : val.progress === "completed"
                         ? "success"
                         : "danger"
                     }
                   >
-                    {val.status}
+                    {val.progress}
                   </Chip>
                 </TableCell>
                 <TableCell>
@@ -290,6 +315,7 @@ const DashboardStartingPage = () => {
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Actions" variant="flat">
                       <DropdownItem
+                        className="dark:text-white"
                         key="edit"
                         onPress={() => openEditModal(val)}
                       >

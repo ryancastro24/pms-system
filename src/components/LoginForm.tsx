@@ -7,6 +7,7 @@ import {
   ActionFunction,
   redirect,
   useNavigation,
+  useActionData,
 } from "react-router-dom";
 import { login } from "../backend/auth";
 
@@ -30,6 +31,8 @@ export const action: ActionFunction = async ({ request }) => {
       localStorage.setItem("user", JSON.stringify(loginData));
 
       return redirect("/dashboard");
+    } else {
+      return loginData;
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -41,9 +44,12 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 const LoginForm = () => {
+  const actionData = useActionData() as { error: string };
   const navigation = useNavigation();
+
+  console.log(actionData);
   return (
-    <div className="w-full h-full flex  items-center justify-center p-10 shadow-none ">
+    <div className="w-full h-full flex  items-center justify-center p-10 shadow-none">
       <Card
         className="w-full sm:w-[400px] p-2 rounded bg-[#f3efea]"
         shadow="none"
@@ -66,6 +72,12 @@ const LoginForm = () => {
               label="Password"
               name="password"
             />
+
+            {actionData && (
+              <h2 className="text-sm text-red-500">
+                {actionData.error} <i>please try again</i>
+              </h2>
+            )}
 
             <Button
               isLoading={navigation.state === "submitting" ? true : false}

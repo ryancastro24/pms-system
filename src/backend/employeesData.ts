@@ -1,15 +1,14 @@
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export async function getAllEmployeesData() {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/personnel",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Optional, depends on your API's requirements
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/personnel`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Optional, depends on your API's requirements
+      },
+    });
     const data = await response.json();
     return data;
   } catch (error) {
@@ -30,17 +29,14 @@ type AddSampleData = {
 export async function addEmployeeData(data: AddSampleData | null) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/auth/register",
-      {
-        method: "POST", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/auth/register`, {
+      method: "POST", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const returnData = await response.json();
 
     console.log(returnData);
@@ -54,17 +50,14 @@ export async function editEmployeeData(data: AddSampleData | null) {
   try {
     console.log(data);
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/personnel/${data?.id}`,
-      {
-        method: "PUT", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/personnel/${data?.id}`, {
+      method: "PUT", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const updatedData = await response.json();
 
     console.log(updatedData);
@@ -78,7 +71,7 @@ export async function deleteEmployeeData(id: string) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/personnel/${id}`, // Use the id parameter directly
+      `${apiUrl}/api/personnel/${id}`, // Use the id parameter directly
       {
         method: "DELETE", // Set the request method to DELETE
         headers: {

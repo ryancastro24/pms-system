@@ -1,15 +1,13 @@
+const apiUrl = import.meta.env.VITE_API_URL;
 export async function getMaintainanceData() {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/maintenance",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Optional, depends on your API's requirements
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/maintenance`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Optional, depends on your API's requirements
+      },
+    });
     const data = await response.json();
     return data;
   } catch (error) {
@@ -27,17 +25,14 @@ type AddMaintainanceType = {
 export async function addMaintainance(data: AddMaintainanceType | null) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      "https://pms-mining-api.onrender.com/api/maintenance",
-      {
-        method: "POST", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/maintenance`, {
+      method: "POST", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const returnData = await response.json();
 
     console.log(returnData);
@@ -50,17 +45,14 @@ export async function addMaintainance(data: AddMaintainanceType | null) {
 export async function updateMaintainance(data: AddMaintainanceType | null) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/maintenance/${data?.id}`,
-      {
-        method: "PUT", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-        body: JSON.stringify(data), // Send data as JSON
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/maintenance/${data?.id}`, {
+      method: "PUT", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(data), // Send data as JSON
+    });
     const returnData = await response.json();
 
     console.log(returnData);
@@ -73,16 +65,13 @@ export async function updateMaintainance(data: AddMaintainanceType | null) {
 export async function deleteMaintainance(id: string | null) {
   try {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    const response = await fetch(
-      `https://pms-mining-api.onrender.com/api/maintenance/${id}`,
-      {
-        method: "DELETE", // Set the request method to POST
-        headers: {
-          Authorization: `Bearer ${token}`, // Add Authorization header
-          "Content-Type": "application/json", // Set content type to JSON
-        },
-      }
-    );
+    const response = await fetch(`${apiUrl}/api/maintenance/${id}`, {
+      method: "DELETE", // Set the request method to POST
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+    });
     const returnData = await response.json();
 
     console.log(returnData);

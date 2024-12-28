@@ -96,23 +96,25 @@ const TrucksComponent = () => {
   const itemsPerPage = 6;
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const filteredTrucks = trucks.filter((truck) => {
-    const matchesSearch = truck.plate_number
-      .toUpperCase()
-      .startsWith(searchData.toUpperCase());
-    const matchesStatus = selectedStatus
-      ? truck.status.toLowerCase() === selectedStatus.toLowerCase()
-      : true;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredTrucks = Array.isArray(trucks)
+    ? trucks.filter((truck) => {
+        const matchesSearch = truck.plate_number
+          .toUpperCase()
+          .startsWith(searchData.toUpperCase());
+        const matchesStatus = selectedStatus
+          ? truck.status.toLowerCase() === selectedStatus.toLowerCase()
+          : true;
+        return matchesSearch && matchesStatus;
+      })
+    : [];
 
   // Calculate the trucks for the current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTrucks = filteredTrucks.slice(startIndex, endIndex);
-
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(trucks.length / itemsPerPage);
+  const totalPages = Array.isArray(trucks)
+    ? Math.ceil(trucks.length / itemsPerPage)
+    : 0;
 
   const navigate = useNavigation();
 

@@ -1,9 +1,6 @@
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody } from "@nextui-org/card";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { FiXCircle } from "react-icons/fi";
-import { PiWarningCircleBold } from "react-icons/pi";
-import { BsFillInfoCircleFill } from "react-icons/bs";
-import { Select, SelectItem } from "@nextui-org/select";
+import { Button } from "@nextui-org/button";
 import {
   Modal,
   ModalContent,
@@ -12,11 +9,14 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FiXCircle } from "react-icons/fi";
+import { PiWarningCircleBold } from "react-icons/pi";
+import { BsFillInfoCircleFill } from "react-icons/bs";
+import { Select, SelectItem } from "@nextui-org/select";
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import { Link, Form, useNavigation } from "react-router-dom";
 import { SamplePropType } from "../pages/MechanicsComponent";
-import { useState } from "react";
 
 type TruckCardPropType = {
   _id: string;
@@ -26,11 +26,13 @@ type TruckCardPropType = {
   chassis_number: any;
   vin_number: string;
   type: string;
+  date_deployed: string;
   person_incharge: {
     _id: string;
     name: string;
   };
   users: SamplePropType[];
+  to_maintenance?: boolean | undefined;
 };
 
 const TruckCardComponent = ({
@@ -42,16 +44,75 @@ const TruckCardComponent = ({
   users,
   chassis_number,
   vin_number,
+  date_deployed,
+  to_maintenance,
   type,
 }: TruckCardPropType) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const navigate = useNavigation();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [, setHighlightGreen] = useState(false);
+
+  useEffect(() => {
+    // Ensure date_deployed and _id are available
+    console.log("date_deployed:", date_deployed);
+    console.log("_id:", _id);
+
+    // Check if deployed_date exceeds 4 months
+    if (date_deployed && _id) {
+      const deployedDate = new Date(date_deployed);
+      const currentDate = new Date();
+      const monthsDifference =
+        currentDate.getMonth() -
+        deployedDate.getMonth() +
+        12 * (currentDate.getFullYear() - deployedDate.getFullYear());
+
+      console.log("Months difference:", monthsDifference);
+
+      if (monthsDifference >= 4) {
+        const postData = async () => {
+          try {
+            const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+            console.log("Using token:", token);
+
+            const response = await fetch(
+              `http://localhost:5000/api/trucks/updateTruckMaintenance/${_id}`,
+              {
+                method: "PUT", // Set the request method to PUT
+                headers: {
+                  Authorization: `Bearer ${token}`, // Add any necessary headers
+                  "Content-Type": "application/json", // Optional, depending on API requirements
+                },
+              }
+            );
+
+            if (!response.ok) {
+              console.error(`Error: ${response.statusText}`);
+            } else {
+              const responseData = await response.json();
+              console.log("Response data:", responseData);
+            }
+          } catch (error) {
+            console.error("Error sending the request:", error);
+          }
+        };
+
+        console.log("Triggering API call...");
+        postData();
+      }
+    }
+  }, [date_deployed, _id]); // Include dependencies to re-run when they change
+
+  const handleResetHighlight = () => {
+    setHighlightGreen(false);
+  };
 
   return (
     <>
       <Card
-        className={`w-full h-44 p-2 rounded bg-[#f3efea] dark:bg-[#27272A] relative`}
+        className={`w-full h-44 p-2 rounded ${
+          to_maintenance ? "bg-green-500" : "bg-[#f3efea]"
+        } dark:bg-[#27272A] relative`}
       >
         <CardHeader className="flex items-center gap-2">
           <strong className="dark:text-white">Plate Number:</strong>
@@ -82,7 +143,7 @@ const TruckCardComponent = ({
           >
             {status === "Maintainance" ? (
               <FiXCircle />
-            ) : status === "On hold" ? (
+            ) : status === "On Hold" ? (
               <PiWarningCircleBold />
             ) : (
               <FaRegCheckCircle />
@@ -92,12 +153,23 @@ const TruckCardComponent = ({
           </span>
 
           <Button
-            className="text-md  hover:bg-[#633f3a] text-white bg-[#8f5c54]"
+            className="text-md hover:bg-[#633f3a] text-white bg-[#8f5c54]"
             isIconOnly
             onPress={onOpen}
           >
             <BsFillInfoCircleFill />
           </Button>
+
+          {to_maintenance && (
+            <Button
+              color="primary"
+              variant="flat"
+              onPress={handleResetHighlight}
+              className="ml-2"
+            >
+              Mark as Done
+            </Button>
+          )}
         </div>
 
         <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -189,9 +261,13 @@ const TruckCardComponent = ({
                         Delete
                       </Button>
 
+                      <Button color="danger" variant="flat" onPress={onClose}>
+                        <Link to={`/lastmaintainance/${1}`}>Issues</Link>
+                      </Button>
+
                       <Button color="primary" variant="flat" onPress={onClose}>
                         <Link to={`/lastmaintainance/${1}`}>
-                          Last Maintainance
+                          Last Maintenance
                         </Link>
                       </Button>
 

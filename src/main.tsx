@@ -34,6 +34,10 @@ import LastMaintainancePage from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
 import { action as destroyAction } from "./routes/destroy";
 import { action as destroyActionTruck } from "./routes/detroyTrucks";
+import IssuesComponent, {
+  loader as issuesLoader,
+  action as issuesAction,
+} from "./pages/IssuesComponent";
 import AnalyticsComponent, {
   loader as analyticsLoader,
 } from "./pages/AnalyticsComponent";
@@ -118,6 +122,12 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsComponent />,
+      },
+      {
+        path: "issues",
+        element: <IssuesComponent />,
+        loader: issuesLoader,
+        action: issuesAction,
       },
     ],
   },
