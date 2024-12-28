@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 import { nextui } from "@nextui-org/react";
-
+import tailwindScrollbar from "tailwind-scrollbar";
+import tailwindcssAnimate from "tailwindcss-animate";
 export default {
   darkMode: "selector",
   content: [
@@ -59,9 +60,5 @@ export default {
       },
     },
   },
-  plugins: [
-    nextui(),
-    require("tailwind-scrollbar"), // Add the scrollbar plugin here
-    require("tailwindcss-animate"),
-  ],
+  plugins: [nextui(), tailwindScrollbar, tailwindcssAnimate],
 };
