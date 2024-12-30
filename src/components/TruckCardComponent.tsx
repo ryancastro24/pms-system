@@ -17,7 +17,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { Input } from "@nextui-org/input";
 import { Link, Form, useNavigation } from "react-router-dom";
 import { SamplePropType } from "../pages/MechanicsComponent";
-
+const apiUrl = import.meta.env.VITE_API_URL;
 type TruckCardPropType = {
   _id: string;
   plate_number: string;
@@ -76,7 +76,7 @@ const TruckCardComponent = ({
             console.log("Using token:", token);
 
             const response = await fetch(
-              `http://localhost:5000/api/trucks/updateTruckMaintenance/${_id}`,
+              `${apiUrl}/api/trucks/updateTruckMaintenance/${_id}`,
               {
                 method: "PUT", // Set the request method to PUT
                 headers: {
