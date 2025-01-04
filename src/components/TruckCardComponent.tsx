@@ -17,6 +17,7 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { Input } from "@nextui-org/input";
 import { Link, Form, useNavigation } from "react-router-dom";
 import { SamplePropType } from "../pages/MechanicsComponent";
+import { DatePicker } from "@nextui-org/date-picker";
 const apiUrl = import.meta.env.VITE_API_URL;
 type TruckCardPropType = {
   _id: string;
@@ -51,13 +52,11 @@ const TruckCardComponent = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const navigate = useNavigation();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [, setHighlightGreen] = useState(false);
+  const [selectedTruck, setSelectedTruck] = useState("");
+  const [openAddMaintenanceModal, setOpenAddMaintenanceModal] = useState(false);
 
+  const mechanicsUsers = users.filter((val) => val.position === "Mechanic");
   useEffect(() => {
-    // Ensure date_deployed and _id are available
-    console.log("date_deployed:", date_deployed);
-    console.log("_id:", _id);
-
     // Check if deployed_date exceeds 4 months
     if (date_deployed && _id) {
       const deployedDate = new Date(date_deployed);
@@ -67,13 +66,10 @@ const TruckCardComponent = ({
         deployedDate.getMonth() +
         12 * (currentDate.getFullYear() - deployedDate.getFullYear());
 
-      console.log("Months difference:", monthsDifference);
-
       if (monthsDifference >= 4) {
         const postData = async () => {
           try {
             const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-            console.log("Using token:", token);
 
             const response = await fetch(
               `${apiUrl}/api/trucks/updateTruckMaintenance/${_id}`,
@@ -96,15 +92,14 @@ const TruckCardComponent = ({
             console.error("Error sending the request:", error);
           }
         };
-
-        console.log("Triggering API call...");
         postData();
       }
     }
   }, [date_deployed, _id]); // Include dependencies to re-run when they change
 
-  const handleResetHighlight = () => {
-    setHighlightGreen(false);
+  const handleAddMaintenance = (truck_id: string) => {
+    setSelectedTruck(truck_id);
+    setOpenAddMaintenanceModal(true);
   };
 
   return (
@@ -164,7 +159,7 @@ const TruckCardComponent = ({
             <Button
               color="primary"
               variant="flat"
-              onPress={handleResetHighlight}
+              onPress={() => handleAddMaintenance(_id)}
               className="ml-2"
             >
               Mark as Done
@@ -327,6 +322,55 @@ const TruckCardComponent = ({
                 </Form>
               </>
             )}
+          </ModalContent>
+        </Modal>
+
+        <Modal
+          size="md"
+          isOpen={openAddMaintenanceModal}
+          onOpenChange={() => setOpenAddMaintenanceModal(true)}
+        >
+          <ModalContent>
+            <Form method="post" className="w-full">
+              <ModalHeader>Add New Maintenance</ModalHeader>
+              <input type="hidden" value={selectedTruck} name="truck_id" />
+              <ModalBody className="grid grid-cols-2 gap-4 w-full">
+                <Select
+                  items={mechanicsUsers}
+                  name="person_incharge"
+                  label="Select Mechanic"
+                  className="max-w-xs"
+                >
+                  {(user) => (
+                    <SelectItem key={user._id}>{user.name}</SelectItem>
+                  )}
+                </Select>
+
+                <DatePicker
+                  name="scheduled_date"
+                  label="Scheduled Date"
+                  className="max-w-[284px]"
+                />
+              </ModalBody>
+              <ModalFooter className="w-full">
+                <Button
+                  color="danger"
+                  variant="light"
+                  onClick={() => setOpenAddMaintenanceModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  name="intent"
+                  value={"add_maintenance"}
+                  isLoading={navigate.state === "submitting"}
+                  type="submit"
+                  color="primary"
+                >
+                  Add Maintenance
+                </Button>
+              </ModalFooter>
+            </Form>
           </ModalContent>
         </Modal>
       </Card>

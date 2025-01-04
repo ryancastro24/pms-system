@@ -22,6 +22,7 @@ import {
   useLoaderData,
 } from "react-router-dom";
 import { getAllEmployeesData } from "../backend/employeesData";
+import { addMaintainance } from "../backend/maintainanceData";
 import { LoaderDataType } from "./MechanicsComponent";
 import { useNavigation } from "react-router-dom";
 import {
@@ -67,13 +68,21 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (request.method === "POST") {
     const formData = await request.formData();
+
     const data: Record<string, FormDataEntryValue> = Object.fromEntries(
       formData.entries()
     );
 
-    const truckData = await addNewTruck(data);
-    console.log(truckData);
-    return redirect("/dashboard/trucks");
+    const intent = formData.get("intent");
+
+    if (intent === "add_truck") {
+      const truckData = await addNewTruck(data);
+      console.log(truckData);
+      return redirect("/dashboard/trucks");
+    } else {
+      const addData = await addMaintainance(data);
+      return addData;
+    }
   } else if (request.method === "PUT") {
     const formData = await request.formData();
     const data: Record<string, FormDataEntryValue> = Object.fromEntries(
@@ -212,6 +221,8 @@ const TrucksComponent = () => {
                         Cancel
                       </Button>
                       <Button
+                        name="intent"
+                        value={"add_truck"}
                         isLoading={
                           navigate.state === "submitting" ? true : false
                         }

@@ -114,8 +114,6 @@ const DashboardStartingPage = () => {
     users: SamplePropType[];
   };
 
-  console.log("maintainace returned ", maintainance);
-
   const mechanicsUsers = users.filter((val) => val.position === "Mechanic");
   const [page, setPage] = useState<number>(1);
   const rowsPerPage = 10;
