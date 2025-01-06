@@ -41,6 +41,8 @@ import IssuesComponent, {
 import AnalyticsComponent, {
   loader as analyticsLoader,
 } from "./pages/AnalyticsComponent";
+
+import TruckIssue, { loader as truckIssueLoader } from "./pages/TruckIssue";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -134,6 +136,12 @@ const router = createBrowserRouter([
   {
     path: "lastmaintainance/:maintainanceId",
     element: <LastMaintainancePage />,
+  },
+
+  {
+    path: "truckissue/:id",
+    element: <TruckIssue />,
+    loader: truckIssueLoader,
   },
 ]);
 

@@ -51,7 +51,7 @@ const IssuesComponent = () => {
 
   return (
     <div className="w-full flex flex-col gap-3 py-5">
-      <h2>Issues Component</h2>
+      <h2 className="dark:text-white">Issues Component</h2>
 
       <Table isStriped aria-label="Example static collection table">
         <TableHeader>
@@ -65,11 +65,19 @@ const IssuesComponent = () => {
           {Array.isArray(issues)
             ? issues.map((issue, index) => (
                 <TableRow key={index}>
-                  <TableCell>{issue.title}</TableCell>
-                  <TableCell>{issue.status}</TableCell>
-                  <TableCell>{issue.truck_id.plate_number}</TableCell>
-                  <TableCell>{issue.user_id.name}</TableCell>
-                  <TableCell>
+                  <TableCell className="dark:text-white">
+                    {issue.title}
+                  </TableCell>
+                  <TableCell className="dark:text-white">
+                    {issue.status}
+                  </TableCell>
+                  <TableCell className="dark:text-white">
+                    {issue.truck_id.plate_number}
+                  </TableCell>
+                  <TableCell className="dark:text-white">
+                    {issue.user_id.name}
+                  </TableCell>
+                  <TableCell className="dark:text-white">
                     {issue.proceed_repair ? (
                       <Button size="sm" color="primary">
                         View

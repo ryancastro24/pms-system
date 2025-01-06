@@ -251,7 +251,7 @@ const TrucksComponent = () => {
         <div className="flex justify-center mt-4">
           <Pagination
             classNames={{
-              cursor: "bg-[#8f5c54]",
+              cursor: "bg-[#D5B990]",
             }}
             total={totalPages}
             initialPage={1}

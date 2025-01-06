@@ -73,6 +73,7 @@ export default function Root() {
           <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-col items-start gap-3 mb-8">
               <User
+                className="dark:text-white"
                 name={userObj?.name}
                 description={userObj?.position}
                 avatarProps={{
@@ -94,7 +95,7 @@ export default function Root() {
                 onClick={() => setNavlist("trucks")}
                 className={`w-full  ${
                   navlist == "trucks"
-                    ? "bg-[#8f5c54] text-white"
+                    ? "bg-[#D5B990] "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
@@ -109,7 +110,7 @@ export default function Root() {
                 onClick={() => setNavlist("mechanics")}
                 className={`w-full  ${
                   navlist == "mechanics"
-                    ? "bg-[#8f5c54] text-white"
+                    ? "bg-[#D5B990] "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
@@ -127,7 +128,7 @@ export default function Root() {
                 onClick={() => setNavlist("analytics")}
                 className={`w-full  ${
                   navlist == "analytics"
-                    ? "bg-[#8f5c54] text-white "
+                    ? "bg-[#D5B990]  "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black  dark:text-white"
                 } p-2 rounded`}
               >
@@ -146,7 +147,7 @@ export default function Root() {
                 onClick={() => setNavlist("issues")}
                 className={`w-full  ${
                   navlist == "issues"
-                    ? "bg-[#8f5c54] text-white "
+                    ? "bg-[#D5B990]  "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black  dark:text-white"
                 } p-2 rounded`}
               >
@@ -173,7 +174,7 @@ export default function Root() {
                 onClick={() => setNavlist("editProfile")}
                 className={`w-full  ${
                   navlist == "editProfile"
-                    ? "bg-[#8f5c54] text-white"
+                    ? "bg-[#D5B990] "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
@@ -192,7 +193,7 @@ export default function Root() {
                 onClick={logout}
                 className={`w-full flex items-center gap-2 cursor-pointer ${
                   navlist == "logout"
-                    ? "bg-[#8f5c54] text-white"
+                    ? "bg-[#D5B990] "
                     : "hover:bg-[#dcd8d0] dark:hover:text-black dark:text-white"
                 } p-2 rounded`}
               >
@@ -208,7 +209,7 @@ export default function Root() {
       <div className="w-full h-full p-10">
         <div className="grid grid-cols-4 gap-4  ">
           <Card
-            className="w-full h-[150px] flex items-center text-white justify-center relative p-2 rounded bg-[#8f5c54]"
+            className="w-full h-[150px] flex items-center  justify-center relative p-2 rounded bg-[#D5B990]"
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
@@ -218,7 +219,7 @@ export default function Root() {
           </Card>
 
           <Card
-            className="w-full h-[150px] flex items-center text-white justify-center relative p-2 rounded bg-[#8f5c54]"
+            className="w-full h-[150px] flex items-center  justify-center relative p-2 rounded bg-[#D5B990]"
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
@@ -228,7 +229,7 @@ export default function Root() {
           </Card>
 
           <Card
-            className="w-full h-[150px] flex items-center text-white justify-center relative p-2 rounded bg-[#8f5c54]"
+            className="w-full h-[150px] flex items-center  justify-center relative p-2 rounded bg-[#D5B990]"
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">
@@ -238,7 +239,7 @@ export default function Root() {
           </Card>
 
           <Card
-            className="w-full h-[150px] flex items-center text-white justify-center relative p-2 rounded bg-[#8f5c54]"
+            className="w-full h-[150px] flex items-center  justify-center relative p-2 rounded bg-[#D5B990]"
             shadow="none"
           >
             <span className="absolute top-3 left-3 text-sm flex items-center gap-1">

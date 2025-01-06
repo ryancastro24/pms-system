@@ -104,7 +104,7 @@ const EditProfileComponent = () => {
   };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
-      <h2 className="text-xl font-bold">Edit Profile</h2>
+      <h2 className="text-xl font-bold dark:text-white">Edit Profile</h2>
 
       <Form method="post" className="flex flex-col gap-16">
         <div className="grid grid-cols-3 gap-5 w-full">

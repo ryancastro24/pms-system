@@ -42,3 +42,25 @@ export async function updateIssueRepair(id: any) {
     console.error("Error sending the request:", error);
   }
 }
+
+export async function getTruckIssues(id: string | undefined) {
+  try {
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `${apiUrl}/api/issues/truckIssue/issue/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Optional, depends on your API's requirements
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching the data:", error);
+  }
+}

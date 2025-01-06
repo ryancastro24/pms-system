@@ -148,7 +148,7 @@ const TruckCardComponent = ({
           </span>
 
           <Button
-            className="text-md hover:bg-[#633f3a] text-white bg-[#8f5c54]"
+            className="text-md hover:bg-[#ac9573] text-[#222222] bg-[#D5B990]"
             isIconOnly
             onPress={onOpen}
           >
@@ -257,7 +257,7 @@ const TruckCardComponent = ({
                       </Button>
 
                       <Button color="danger" variant="flat" onPress={onClose}>
-                        <Link to={`/lastmaintainance/${1}`}>Issues</Link>
+                        <Link to={`/truckissue/${_id}`}>Issues</Link>
                       </Button>
 
                       <Button color="primary" variant="flat" onPress={onClose}>
