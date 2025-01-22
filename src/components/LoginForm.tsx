@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
+import logo from "../assets/pms-logo.png";
 import {
   Link,
   Form,
@@ -54,20 +55,23 @@ const LoginForm = () => {
         className="w-full sm:w-[400px] p-2 rounded bg-[#f3efea]"
         shadow="none"
       >
-        <CardHeader className="">PMS System | Login Form</CardHeader>
+        <CardHeader className="flex items-center gap-2">
+          <img src={logo} alt="PMS System Logo" className="w-8 h-8" />
+          <span>PMS System | Login Form</span>
+        </CardHeader>
 
         <CardBody className="flex flex-col gap-2">
-          <Form method="post" className="flex flex-col gap-2">
+          <Form method="post" className="flex flex-col gap-3">
             <Input
-              className="bg-[#dcd8d0] rounded"
-              radius="sm"
+              id="username"
+              className="rounded"
               type="text"
               label="Username"
               name="username"
             />
+
             <Input
-              className="bg-[#dcd8d0] rounded"
-              radius="sm"
+              className=" rounded"
               type="password"
               label="Password"
               name="password"
@@ -82,9 +86,9 @@ const LoginForm = () => {
             <Button
               isLoading={navigation.state === "submitting" ? true : false}
               type="submit"
-              className="rounded h-[50px] bg-[#8f5c54] font-bold text-white"
+              className="rounded h-[50px] bg-[#D5B990] "
             >
-              Submit
+              LOGIN
             </Button>
           </Form>
         </CardBody>

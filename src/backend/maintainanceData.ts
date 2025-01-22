@@ -15,6 +15,25 @@ export async function getMaintainanceData() {
   }
 }
 
+export async function getSpecificTruckMaintainanceData(id: string | undefined) {
+  try {
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const response = await fetch(
+      `${apiUrl}/api/maintenance/getSpecificTruckMaintenance/maintenance/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Authorization header
+          "Content-Type": "application/json", // Optional, depends on your API's requirements
+        },
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching the data:", error);
+  }
+}
+
 type AddMaintainanceType = {
   person_incharge?: string;
   truck_id?: string;

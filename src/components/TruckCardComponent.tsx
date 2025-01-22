@@ -171,7 +171,7 @@ const TruckCardComponent = ({
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader className="flex flex-col gap-1">
+                <ModalHeader className="flex flex-col gap-1 dark:text-white">
                   Update Truck Details
                 </ModalHeader>
 
@@ -261,7 +261,7 @@ const TruckCardComponent = ({
                       </Button>
 
                       <Button color="primary" variant="flat" onPress={onClose}>
-                        <Link to={`/lastmaintainance/${1}`}>
+                        <Link to={`/lastmaintainance/${_id}`}>
                           Last Maintenance
                         </Link>
                       </Button>

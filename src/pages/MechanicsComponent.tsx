@@ -26,7 +26,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
-import UserDetailsModal from "../components/UserDetailsModal";
+
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
 import {
   getAllEmployeesData,
@@ -92,17 +92,12 @@ export type LoaderDataType = {
 const MechanicsComponent = () => {
   const navigation = useNavigation();
 
-  console.log(navigation.state);
-
   const [searchData, setSearchData] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<SamplePropType | null>(null);
-  const [userDetails, setUserDetails] = useState<SamplePropType | null>(null);
-  const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const { users } = useLoaderData() as LoaderDataType;
-  console.log(users);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
@@ -139,15 +134,6 @@ const MechanicsComponent = () => {
     setIsEditModalOpen(false);
   };
 
-  const openDetailsModalFunc = (user: SamplePropType) => {
-    setUserDetails(user);
-    setOpenDetailsModal(true);
-  };
-
-  const closeDetailsModalFunc = () => {
-    setUserDetails(null);
-    setOpenDetailsModal(false);
-  };
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
@@ -318,13 +304,6 @@ const MechanicsComponent = () => {
                     <DropdownMenu aria-label="Actions">
                       <DropdownItem
                         className="dark:text-white"
-                        key="details"
-                        onClick={() => openDetailsModalFunc(user)}
-                      >
-                        Details
-                      </DropdownItem>
-                      <DropdownItem
-                        className="dark:text-white"
                         key="edit"
                         onClick={() => openEditModal(user)}
                       >
@@ -358,7 +337,9 @@ const MechanicsComponent = () => {
           <ModalContent>
             {() => (
               <Form method="put">
-                <ModalHeader>Edit Employee</ModalHeader>
+                <ModalHeader className="dark:text-white">
+                  Edit Employee
+                </ModalHeader>
                 <ModalBody className="grid grid-cols-2 gap-4">
                   <Input
                     type="text"
@@ -404,7 +385,11 @@ const MechanicsComponent = () => {
                   >
                     Cancel
                   </Button>
-                  <Button color="primary" type="submit">
+                  <Button
+                    isLoading={navigation.state === "submitting"}
+                    color="primary"
+                    type="submit"
+                  >
                     Update Profile
                   </Button>
                 </ModalFooter>
@@ -422,7 +407,9 @@ const MechanicsComponent = () => {
         <ModalContent>
           {() => (
             <>
-              <ModalHeader>Are you sure Delete User Details</ModalHeader>
+              <ModalHeader className="dark:text-white">
+                Are you sure Delete User Details
+              </ModalHeader>
               <ModalBody className="grid grid-cols-2 gap-4"></ModalBody>
 
               <Form
@@ -451,12 +438,6 @@ const MechanicsComponent = () => {
           )}
         </ModalContent>
       </Modal>
-
-      <UserDetailsModal
-        user={userDetails}
-        closeDetailsModalFunc={closeDetailsModalFunc}
-        openDetailsModal={openDetailsModal}
-      />
     </div>
   );
 };

@@ -30,7 +30,9 @@ import EditProfileComponent, {
   loader as editProfileLoader,
 } from "./pages/EditProfileComponent";
 import { action as destroyMaintainance } from "./routes/destroyMaintainance";
-import LastMaintainancePage from "./pages/LastMaintainancePage";
+import LastMaintainancePage, {
+  loader as LastMaintainancePageLoader,
+} from "./pages/LastMaintainancePage";
 import { isAuthenticated } from "./utils/auth"; // Import the auth check function
 import { action as destroyAction } from "./routes/destroy";
 import { action as destroyActionTruck } from "./routes/detroyTrucks";
@@ -41,7 +43,9 @@ import IssuesComponent, {
 import AnalyticsComponent, {
   loader as analyticsLoader,
 } from "./pages/AnalyticsComponent";
-
+import ListOfMaintenance, {
+  loader as ListOfMaintenanceLoader,
+} from "./pages/ListOfMaintenance";
 import TruckIssue, { loader as truckIssueLoader } from "./pages/TruckIssue";
 // Loader to protect /dashboard route
 
@@ -134,14 +138,21 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "lastmaintainance/:maintainanceId",
+    path: "lastmaintainance/:truckId",
     element: <LastMaintainancePage />,
+    loader: LastMaintainancePageLoader,
   },
 
   {
     path: "truckissue/:id",
     element: <TruckIssue />,
     loader: truckIssueLoader,
+  },
+
+  {
+    path: "listOfMaintenance/:truckId",
+    element: <ListOfMaintenance />,
+    loader: ListOfMaintenanceLoader,
   },
 ]);
 
