@@ -68,6 +68,7 @@ const LoginForm = () => {
               type="text"
               label="Username"
               name="username"
+              required
             />
 
             <Input
@@ -75,6 +76,7 @@ const LoginForm = () => {
               type="password"
               label="Password"
               name="password"
+              required
             />
 
             {actionData && (
