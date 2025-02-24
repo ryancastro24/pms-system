@@ -114,6 +114,8 @@ const DashboardStartingPage = () => {
     users: SamplePropType[];
   };
 
+  console.log("Maintenance:", maintainance);
+
   const mechanicsUsers = users.filter((val) => val.position === "Mechanic");
   const [page, setPage] = useState<number>(1);
   const rowsPerPage = 10;
@@ -162,7 +164,6 @@ const DashboardStartingPage = () => {
     setOpenDeleteModal(false);
   };
 
-  console.log(items);
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
@@ -267,7 +268,7 @@ const DashboardStartingPage = () => {
             {items.map((val: MaintainanceType) => (
               <TableRow key={val._id}>
                 <TableCell className="dark:text-white">
-                  {val.person_incharge.name}
+                  {val.person_incharge?.name ?? "No Person In charge"}
                 </TableCell>
                 <TableCell className="dark:text-white">
                   {val.truck_id.plate_number}

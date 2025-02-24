@@ -62,6 +62,14 @@ const IssuesComponent = () => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
+  if (!Array.isArray(issues) || issues.length === 0) {
+    return (
+      <div className="flex items-center p-24 justify-center">
+        <h1>No Issues Available</h1>
+      </div>
+    );
+  }
+
   // Calculate paginated issues
   const paginatedIssues = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
