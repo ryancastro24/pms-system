@@ -182,10 +182,12 @@ const TruckCardComponent = ({
                       defaultValue={plate_number}
                       label="Plate Number"
                       name="plate_number"
+                      required
                     />
 
                     <Input
                       type="number"
+                      required
                       defaultValue={chassis_number}
                       label="Chassis Number"
                       name="chassis_number"
@@ -193,6 +195,7 @@ const TruckCardComponent = ({
 
                     <Input
                       type="text"
+                      required
                       defaultValue={vin_number}
                       label="VIN Number"
                       name="vin_number"
@@ -200,6 +203,7 @@ const TruckCardComponent = ({
 
                     <Input
                       name="model"
+                      required
                       type="text"
                       label="Model"
                       defaultValue={model}
@@ -208,11 +212,13 @@ const TruckCardComponent = ({
                     <Input
                       name="type"
                       type="text"
+                      required
                       label="Type"
                       defaultValue={type}
                     />
                     <Input name="id" type="hidden" defaultValue={_id} />
                     <Select
+                      required
                       items={users}
                       placeholder="Person In Charge"
                       name="person_incharge"
@@ -224,6 +230,7 @@ const TruckCardComponent = ({
                     </Select>
 
                     <Select
+                      required
                       items={[
                         { key: "Available", label: "Available" },
                         { key: "On Hold", label: "On Hold" },

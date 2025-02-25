@@ -177,19 +177,27 @@ const TrucksComponent = () => {
                         type="text"
                         label="Plate Number"
                         name="plate_number"
+                        required
                       />
-                      <Input type="text" label="VIN Number" name="vin_number" />
+                      <Input
+                        required
+                        type="text"
+                        label="VIN Number"
+                        name="vin_number"
+                      />
                       <Input
                         type="text"
                         label="Chassis Number"
                         name="chassis_number"
+                        required
                       />
-                      <Input type="text" label="Model" name="model" />
-                      <Input type="text" label="Type" name="type" />
+                      <Input required type="text" label="Model" name="model" />
+                      <Input required type="text" label="Type" name="type" />
                       <Select
                         items={users}
                         placeholder="Person In Charge"
                         name="person_incharge"
+                        required
                       >
                         {(val) => (
                           <SelectItem key={val._id}>{val.name}</SelectItem>
@@ -197,6 +205,7 @@ const TrucksComponent = () => {
                       </Select>
 
                       <Select
+                        required
                         items={[
                           { key: "Available", label: "Available" },
                           { key: "On Hold", label: "On Hold" },
@@ -211,6 +220,7 @@ const TrucksComponent = () => {
                       </Select>
 
                       <DatePicker
+                        isRequired
                         label="Date Deployed"
                         className="max-w-[284px]"
                         name="date_deployed"

@@ -195,6 +195,7 @@ const MechanicsComponent = () => {
                       />
 
                       <Select
+                        required
                         items={positions}
                         name="position"
                         label="Select Position"
@@ -208,6 +209,7 @@ const MechanicsComponent = () => {
                       </Select>
 
                       <Select
+                        required
                         items={[
                           { key: "male", label: "Male" },
                           { key: "female", label: "Female" },
@@ -416,7 +418,6 @@ const MechanicsComponent = () => {
                 method="post"
                 action={`/dashboard/mechanics/${selectedUser?._id}/destroy`}
               >
-                <Input type="hidden" />
                 <ModalFooter>
                   <Button
                     color="danger"
