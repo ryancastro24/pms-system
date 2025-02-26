@@ -36,8 +36,6 @@ import {
 } from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
 import { redirect, useNavigation, useFetcher } from "react-router-dom";
-import { addToast } from "@heroui/toast";
-import { cn } from "@nextui-org/theme";
 export async function loader() {
   const users = await getAllEmployeesData();
   return { users };
