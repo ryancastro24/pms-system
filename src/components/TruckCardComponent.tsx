@@ -117,7 +117,7 @@ const TruckCardComponent = ({
         <CardBody>
           <span className="text-sm dark:text-white">
             <strong>Driver: </strong>
-            {person_incharge.name}
+            {person_incharge?.name ?? "No Person Incharge"}
           </span>
 
           <span className="text-sm dark:text-white">
@@ -216,13 +216,13 @@ const TruckCardComponent = ({
                       label="Type"
                       defaultValue={type}
                     />
-                    <Input name="id" type="hidden" defaultValue={_id} />
+                    <Input name="id" type="hidden" defaultValue={_id ?? ""} />
                     <Select
                       required
                       items={users}
                       placeholder="Person In Charge"
                       name="person_incharge"
-                      defaultSelectedKeys={[person_incharge._id]}
+                      defaultSelectedKeys={[person_incharge?._id]}
                     >
                       {(val) => (
                         <SelectItem key={val._id}>{val.name}</SelectItem>

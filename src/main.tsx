@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider } from "./components/ThemeProvider";
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -47,6 +48,7 @@ import ListOfMaintenance, {
   loader as ListOfMaintenanceLoader,
 } from "./pages/ListOfMaintenance";
 import TruckIssue, { loader as truckIssueLoader } from "./pages/TruckIssue";
+import Providers from "./provider";
 // Loader to protect /dashboard route
 
 // Loader to protect /landing page route
@@ -159,11 +161,13 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NextUIProvider>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <div className="w-full h-[100vh] dark:bg-[#434343]">
-          <RouterProvider router={router} />
-        </div>
-      </ThemeProvider>
+      <Providers>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <div className="w-full h-[100vh] dark:bg-[#434343]">
+            <RouterProvider router={router} />
+          </div>
+        </ThemeProvider>
+      </Providers>
     </NextUIProvider>
   </StrictMode>
 );

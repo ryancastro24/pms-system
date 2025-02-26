@@ -1,3 +1,4 @@
+const {heroui} = require('@heroui/theme');
 /** @type {import('tailwindcss').Config} */
 import { nextui } from "@nextui-org/react";
 import tailwindScrollbar from "tailwind-scrollbar";
@@ -8,6 +9,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/components/(toast|spinner).js"
   ],
   theme: {
     extend: {
@@ -60,5 +62,5 @@ export default {
       },
     },
   },
-  plugins: [nextui(), tailwindScrollbar, tailwindcssAnimate],
+  plugins: [nextui(),tailwindScrollbar,tailwindcssAnimate,heroui()],
 };

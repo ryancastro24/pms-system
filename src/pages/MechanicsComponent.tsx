@@ -12,6 +12,7 @@ import { GoPersonAdd } from "react-icons/go";
 import { Button } from "@nextui-org/button";
 import { CiMenuKebab } from "react-icons/ci";
 import { Select, SelectItem } from "@nextui-org/select";
+import { useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -24,26 +25,25 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
 } from "@nextui-org/modal";
 
 import { useLoaderData, Form, ActionFunction } from "react-router-dom";
+
 import {
   getAllEmployeesData,
   addEmployeeData,
   editEmployeeData,
 } from "../backend/employeesData";
 import { Pagination } from "@nextui-org/pagination";
-import { redirect, useNavigation } from "react-router-dom";
-
+import { redirect, useNavigation, useFetcher } from "react-router-dom";
+import { addToast } from "@heroui/toast";
+import { cn } from "@nextui-org/theme";
 export async function loader() {
   const users = await getAllEmployeesData();
   return { users };
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log(request.method);
-  console.log(request);
   const formData = await request.formData();
   const data: Record<string, FormDataEntryValue> = Object.fromEntries(
     formData.entries()
@@ -91,9 +91,11 @@ export type LoaderDataType = {
 
 const MechanicsComponent = () => {
   const navigation = useNavigation();
+  const fetcher = useFetcher();
 
   const [searchData, setSearchData] = useState("");
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<SamplePropType | null>(null);
@@ -134,6 +136,12 @@ const MechanicsComponent = () => {
     setIsEditModalOpen(false);
   };
 
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.error === undefined) {
+      setOpenAddModal(false);
+    }
+  }, [fetcher.data]);
+
   return (
     <div className="w-full h-full flex flex-col gap-4 mt-8">
       <div className="w-full p-3 pl-6 rounded bg-[#dcd8d0] dark:bg-[#222121] flex justify-between items-center">
@@ -151,27 +159,44 @@ const MechanicsComponent = () => {
             isIconOnly
             className="text-xl"
             color="primary"
-            onPress={onOpen}
+            onPress={() => setOpenAddModal(true)}
           >
             <GoPersonAdd />
           </Button>
-          <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
+          <Modal
+            size="2xl"
+            isOpen={openAddModal}
+            onOpenChange={setOpenAddModal}
+          >
             <ModalContent>
               {(onClose) => (
                 <>
                   <ModalHeader className="flex flex-col gap-1 dark:text-white">
                     Add New Employee
                   </ModalHeader>
-                  <Form method="post" className="w-full">
+                  <fetcher.Form method="post" className="w-full">
                     <ModalBody className="grid grid-cols-2 gap-4 w-full">
                       <Input type="text" label="Name" name="name" required />
                       <Input
                         type="text"
                         label="Username"
                         name="username"
+                        errorMessage="Username already exists"
+                        isInvalid={
+                          fetcher.data?.error === "Username already exists"
+                        }
                         required
                       />
-                      <Input type="email" label="Email" name="email" required />
+                      <Input
+                        errorMessage="Email already exists"
+                        isInvalid={
+                          fetcher.data?.error === "Email already exists"
+                        }
+                        type="email"
+                        label="Email"
+                        name="email"
+                        required
+                      />
                       <Input type="number" label="Age" name="age" required />
                       <Input
                         type="text"
@@ -232,19 +257,17 @@ const MechanicsComponent = () => {
                         variant="light"
                         onPress={onClose}
                       >
-                        Cancel
+                        Close
                       </Button>
                       <Button
-                        isLoading={
-                          navigation.state === "submitting" ? true : false
-                        }
+                        isLoading={fetcher.state === "submitting"}
                         type="submit"
                         color="primary"
                       >
-                        Add Employee
+                        Submit
                       </Button>
                     </ModalFooter>
-                  </Form>
+                  </fetcher.Form>
                 </>
               )}
             </ModalContent>

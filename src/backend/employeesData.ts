@@ -40,6 +40,7 @@ export async function addEmployeeData(data: AddSampleData | null) {
     const returnData = await response.json();
 
     console.log(returnData);
+
     return returnData;
   } catch (error) {
     console.error("Error adding the employee data:", error);

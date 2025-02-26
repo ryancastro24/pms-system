@@ -100,6 +100,7 @@ const TrucksComponent = () => {
   const [searchData, setSearchData] = useState("");
   const { users } = useLoaderData() as LoaderDataType;
   const { trucks } = useLoaderData() as TruckLoaderDataType;
+
   console.log(trucks);
 
   const itemsPerPage = 6;
@@ -238,7 +239,6 @@ const TrucksComponent = () => {
                         }
                         type="submit"
                         color="primary"
-                        onPress={onClose}
                       >
                         Add Truck
                       </Button>

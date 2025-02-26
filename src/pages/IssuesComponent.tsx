@@ -116,7 +116,7 @@ const IssuesComponent = () => {
                 {issue.truck_id.plate_number}
               </TableCell>
               <TableCell className="dark:text-white">
-                {issue.user_id.name}
+                {issue.user_id?.name ?? "No person incharge"}
               </TableCell>
               <TableCell className="dark:text-white">
                 {issue.proceed_repair ? (
